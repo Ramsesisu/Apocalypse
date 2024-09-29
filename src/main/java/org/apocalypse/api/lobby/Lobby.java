@@ -18,7 +18,7 @@ public class Lobby {
     private final List<Survivor> survivors;
     private final Map map;
     private final World world;
-    private int round = 0;
+    private int round = 1;
 
     @SneakyThrows
     public Lobby(Class<? extends Map> map) {
@@ -29,7 +29,7 @@ public class Lobby {
         this.world.setAutoSave(false);
         this.world.setPVP(false);
         this.world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        this.world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        this.world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
     }
 
     public void add(Survivor survivor) {

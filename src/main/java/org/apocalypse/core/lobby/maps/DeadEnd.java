@@ -11,6 +11,6 @@ public class DeadEnd extends Map {
     public DeadEnd() {
         super("Dead End", LocationUtils.get(0, 100, 0),
                 List.of(Zombie.class),
-                List.of(LocationUtils.get(0, 0, 0)));
+                List.of(LocationUtils.get(17, 67, 23, -30)));
     }
 }

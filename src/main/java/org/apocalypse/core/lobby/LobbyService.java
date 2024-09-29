@@ -14,18 +14,13 @@ public class LobbyService extends Service<Integer, Lobby> {
     }
 
     public Lobby find(Survivor survivor, Class<? extends Map> map) {
-        Lobby lobby = null;
-        for (Lobby l : this.getLobbies()) {
-            if (l.getMap().getClass().equals(map))
-                if (l.size() < 4)
-                    lobby = l;
+        for (Lobby lobby : this.getLobbies()) {
+            if (lobby.getMap().getClass().equals(map))
+                if (lobby.size() < 4)
+                    return lobby;
         }
-        if (lobby == null) {
-            lobby = new Lobby(map);
-            this.add(lobby.hashCode(), lobby);
-        }
-        lobby.add(survivor);
-        survivor.lobby(lobby);
+        Lobby lobby = new Lobby(map);
+        this.add(lobby.hashCode(), lobby);
         return lobby;
     }
 }

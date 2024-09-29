@@ -7,6 +7,7 @@ import org.apocalypse.api.command.Prefix;
 import org.apocalypse.api.lobby.Lobby;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -60,15 +61,22 @@ public class Survivor {
 
     public void lobby(Lobby lobby) {
         if (this.isOnline()) {
-            this.online().teleport(lobby.getWorld().getSpawnLocation());
-            lobby.add(this);
+            this.teleport(lobby.getWorld(), lobby.getMap().getOrigin());
+            if (!lobby.getSurvivors().contains(this))
+                lobby.add(this);
+        }
+    }
+
+    public void teleport(World world, Location target) {
+        if (this.isOnline()) {
+            target.setWorld(world);
+            this.online().teleport(target);
         }
     }
 
     public void teleport(Location target) {
         if (this.isOnline()) {
-            target.setWorld(this.getLocation().getWorld());
-            this.online().teleport(target);
+            this.teleport(this.getLocation().getWorld(), target);
         }
     }
 

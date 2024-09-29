@@ -26,7 +26,7 @@ public class WeaponListener implements Listener {
         if (item == null) return;
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
 
-        Weapon weapon = Container.get(WeaponService.class).get(item);
+        Weapon weapon = Container.get(WeaponService.class).get(item.getItemMeta());
         if (weapon == null) return;
         event.setCancelled(true);
         if (weapon.isCooldown()) return;
@@ -49,7 +49,7 @@ public class WeaponListener implements Listener {
         ItemStack item = event.getItemDrop().getItemStack();
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
 
-        Weapon weapon = Container.get(WeaponService.class).get(item);
+        Weapon weapon = Container.get(WeaponService.class).get(item.getItemMeta());
         weapon.fillAmmo();
         weapon.updateLore();
     }

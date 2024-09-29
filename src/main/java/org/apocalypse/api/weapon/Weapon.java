@@ -33,7 +33,7 @@ public class Weapon {
         this.magazine = type.getMagazine();
         this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).build();
 
-        Container.get(WeaponService.class).add(this.item, this);
+        Container.get(WeaponService.class).add(this.item.getItemMeta(), this);
     }
 
     public boolean isCooldown() {
