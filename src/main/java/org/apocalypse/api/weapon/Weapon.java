@@ -1,12 +1,15 @@
 package org.apocalypse.api.weapon;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apocalypse.api.builder.ItemBuilder;
 import org.apocalypse.api.weapon.types.WeaponType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
+@Setter
 public class Weapon {
 
     public enum Type {
@@ -16,8 +19,10 @@ public class Weapon {
 
     private final ItemStack item;
     private final WeaponType type;
+    @Setter(AccessLevel.NONE)
     private int ammo = 0;
     private int magazine = 0;
+    private boolean enchanted = false;
 
     public Weapon(@NotNull WeaponType type) {
         this.item = ItemBuilder.create(type.getItem()).setName(type.getName()).build();

@@ -27,8 +27,9 @@ public class WeaponType {
         this.item = item;
         this.type = Weapon.Type.MELEE;
         this.name = name;
-        this.damage = damage;
         this.magazine = 0;
         this.ammo = 0;
+        this.bullet = null;
+        this.damage = damage;
     }
 }
