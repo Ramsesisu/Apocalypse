@@ -53,4 +53,8 @@ public class Weapon {
             }
         }
     }
+
+    public void updateLore() {
+        ItemBuilder.create(item).setLore("§6" + ammo + "§8/§6" + magazine);
+    }
 }

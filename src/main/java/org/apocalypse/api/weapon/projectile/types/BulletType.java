@@ -11,6 +11,7 @@ public class BulletType {
     private final String name;
     private final Class<? extends Projectile> projectile;
     private final double damage;
+    private final float speed;
     private final float range;
     private final boolean explosive;
 }

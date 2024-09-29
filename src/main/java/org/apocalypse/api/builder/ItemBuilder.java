@@ -87,6 +87,14 @@ public class ItemBuilder {
         return this;
     }
 
+    public String getName() {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            return meta.getDisplayName();
+        }
+        return null;
+    }
+
     public ItemBuilder setLore(String lore) {
         return this.setLore(List.of(lore));
     }
@@ -98,6 +106,14 @@ public class ItemBuilder {
             item.setItemMeta(meta);
         }
         return this;
+    }
+
+    public String getLore() {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            return meta.getLore().get(0);
+        }
+        return null;
     }
 
     public ItemBuilder addLore(String lore) {

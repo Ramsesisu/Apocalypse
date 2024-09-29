@@ -3,9 +3,9 @@ package org.apocalypse.core.monster;
 import lombok.SneakyThrows;
 import org.apocalypse.Apocalypse;
 import org.apocalypse.api.monster.type.MonsterType;
-import org.apocalypse.api.service.Service;
+import org.apocalypse.api.service.Record;
 
-public class MonsterService extends Service<MonsterType> {
+public class MonsterRecord extends Record<MonsterType> {
 
     @SneakyThrows
     @Override

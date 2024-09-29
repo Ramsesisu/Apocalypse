@@ -1,18 +1,35 @@
 package org.apocalypse;
 
 import com.google.common.reflect.ClassPath;
-import org.apocalypse.api.service.container.ServiceContainer;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apocalypse.api.service.container.Container;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 public final class Apocalypse extends JavaPlugin {
 
+    private static Apocalypse INSTANCE;
+
+    public static Apocalypse getInstance() {
+        return INSTANCE;
+    }
+
+    @SneakyThrows
     @Override
     public void onEnable() {
-        ServiceContainer.register();
+        INSTANCE = this;
+
+        Container.register();
+
+        for (Class<? extends Listener> listener : findClasses(Listener.class)) {
+            this.getServer().getPluginManager().registerEvents(listener.getConstructor().newInstance(), getInstance());
+        }
     }
 
     @Override

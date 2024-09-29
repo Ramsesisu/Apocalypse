@@ -1,16 +1,33 @@
 package org.apocalypse.api.weapon.projectile;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apocalypse.api.weapon.projectile.types.BulletType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.util.Vector;
 
 @Getter
-@RequiredArgsConstructor
 public class Bullet {
 
-    private final Projectile entity;
+    private Projectile projectile = null;
     private final BulletType type;
-    private final int damage;
     private final float range;
+
+    public Bullet(BulletType type) {
+        this.type = type;
+        this.range = 0;
+    }
+
+    public Bullet(BulletType type, float range) {
+        this.type = type;
+        this.range = range;
+    }
+
+    public void shoot(Player shooter, BulletType type) {
+        Vector direction = shooter.getLocation().add(0, 1.5, 0).getDirection();
+        this.projectile = shooter.launchProjectile(type.getProjectile(), direction);
+        this.projectile.setShooter(shooter);
+        this.projectile.setVelocity(direction.multiply(type.getSpeed()));
+        this.projectile.setGravity(false);
+    }
 }
