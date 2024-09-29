@@ -5,27 +5,14 @@ import org.apocalypse.Apocalypse;
 import org.apocalypse.api.monster.type.MonsterType;
 import org.apocalypse.api.service.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class MonsterService extends Service {
-
-    private final Map<Class<?>, MonsterType> monsters = new HashMap<>();
+public class MonsterService extends Service<MonsterType> {
 
     @SneakyThrows
     @Override
     public void load() {
-        for (Class<?> clazz : Apocalypse.findClasses(MonsterType.class)) {
-            try {
-                MonsterType monster = (MonsterType) clazz.getConstructor().newInstance();
-                monsters.put(clazz, monster);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        for (Class<? extends MonsterType> clazz : Apocalypse.findClasses(MonsterType.class)) {
+            MonsterType monster = clazz.getConstructor().newInstance();
+            list.put(clazz, monster);
         }
-    }
-
-    public MonsterType get(Class<? extends MonsterType> monster) {
-        return monsters.get(monster);
     }
 }

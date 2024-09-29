@@ -10,15 +10,14 @@ import java.util.Map;
 public class ServiceContainer {
 
     private static ServiceContainer INSTANCE;
-    private final Map<Class<? extends Service>, Service> services = new HashMap<>();
+    private final Map<Class<? extends Service<?>>, Service<?>> services = new HashMap<>();
 
     @SneakyThrows
     public static void register() {
         INSTANCE = new ServiceContainer();
-
-        for (Class<?> clazz : Apocalypse.findClasses(Service.class)) {
-            Service service = (Service) clazz.getConstructor().newInstance();
-            INSTANCE.services.put(clazz.asSubclass(Service.class), service);
+        for (Class<? extends Service<?>> clazz : Apocalypse.findClasses(Service.class)) {
+            Service<?> service = clazz.getConstructor().newInstance();
+            INSTANCE.services.put(clazz, service);
             service.load();
         }
     }

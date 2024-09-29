@@ -1,6 +1,7 @@
 package org.apocalypse;
 
 import com.google.common.reflect.ClassPath;
+import org.apocalypse.api.service.container.ServiceContainer;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ public final class Apocalypse extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
+        ServiceContainer.register();
     }
 
     @Override
@@ -28,14 +29,14 @@ public final class Apocalypse extends JavaPlugin {
                 .collect(Collectors.toSet());
     }
 
-    public static Set<Class<?>> findClasses(final Class<?> superClass) throws IOException {
+    public static <T> Set<Class<? extends T>> findClasses(final Class<T> superClass) throws IOException {
         return ClassPath.from(Apocalypse.class.getClassLoader())
                 .getAllClasses()
                 .stream()
                 .filter(clazz -> clazz.getPackageName().startsWith("org.apocalypse.core"))
                 .map(ClassPath.ClassInfo::load)
                 .filter(clazz -> superClass.isAssignableFrom(clazz) && !clazz.equals(superClass))
-                .map(clazz -> (Class<?>) clazz)
+                .map(clazz -> (Class<? extends T>) clazz)
                 .collect(Collectors.toSet());
     }
 }
