@@ -32,6 +32,7 @@ public class GiveWeaponCommand extends CommandExecutor {
         Weapon weapon = new Weapon(type);
         ItemStack item = weapon.getItem();
         survivor.give(item);
+        weapon.setKey(item.hashCode());
 
         survivor.sendMessage(prefix, "§cReceived the weapon " + type.getName() + ".");
     }

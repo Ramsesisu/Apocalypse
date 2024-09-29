@@ -1,7 +1,7 @@
 package org.apocalypse.core.lobby.maps;
 
+import org.apocalypse.api.location.Location;
 import org.apocalypse.api.map.Map;
-import org.apocalypse.api.utils.LocationUtils;
 import org.apocalypse.core.monster.type.Zombie;
 
 import java.util.List;
@@ -9,8 +9,8 @@ import java.util.List;
 public class DeadEnd extends Map {
 
     public DeadEnd() {
-        super("Dead End", LocationUtils.get(0, 100, 0),
+        super("Dead End", new Location(17, 67, 23, -30),
                 List.of(Zombie.class),
-                List.of(LocationUtils.get(17, 67, 23, -30)));
+                List.of(new Location(0, 0, 0)));
     }
 }

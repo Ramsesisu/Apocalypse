@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.apocalypse.api.command.Prefix;
 import org.apocalypse.api.lobby.Lobby;
-import org.bukkit.Location;
+import org.apocalypse.api.location.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -69,19 +69,18 @@ public class Survivor {
 
     public void teleport(World world, Location target) {
         if (this.isOnline()) {
-            target.setWorld(world);
-            this.online().teleport(target);
+            this.online().teleport(target.get(world));
         }
     }
 
     public void teleport(Location target) {
         if (this.isOnline()) {
-            this.teleport(this.getLocation().getWorld(), target);
+            this.teleport(this.getLocation().get().getWorld(), target);
         }
     }
 
     public Location getLocation() {
-        return this.isOnline() ? this.online().getLocation() : null;
+        return this.isOnline() ? new Location(this.online().getLocation()) : null;
     }
 
     public Inventory getInventory() {

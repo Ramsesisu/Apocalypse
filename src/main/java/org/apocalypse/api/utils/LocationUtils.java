@@ -13,39 +13,6 @@ public class LocationUtils {
 
     public static final World WORLD = Bukkit.getWorlds().getFirst();
 
-    public static Location get(int x, int y, int z) {
-        return toAverage(new Location(WORLD, x, y, z, 0, 0));
-    }
-
-    public static Location get(int x, int y, int z, int yaw) {
-        return toAverage(new Location(WORLD, x, y, z, yaw, 0));
-    }
-
-    public static Location get(int x, int z) {
-        return toAverage(new Location(WORLD, x, 0, z, 0, 0));
-    }
-
-    public static Location get(String x, String y, String z, String yaw) {
-        return get(parse(x), parse(y), parse(z), parse(yaw));
-    }
-
-    public static Location get(String x, String y, String z) {
-        return get(parse(x), parse(y), parse(z));
-    }
-
-    public static int parse(String string) {
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException e) {
-            Bukkit.getLogger().log(Level.WARNING, e, () -> "Couldn't parse " + string + " to an integer.");
-        }
-        return 0;
-    }
-
-    public static String parse(int i) {
-        return String.valueOf(i);
-    }
-
     public static String getShort(Location loc) {
         DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.ENGLISH));
         return df.format(loc.getX()) + "/" + df.format(loc.getY()) + "/" + df.format(loc.getZ());

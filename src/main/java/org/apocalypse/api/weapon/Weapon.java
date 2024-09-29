@@ -19,6 +19,7 @@ public class Weapon {
         GUN
     }
 
+    private int key;
     private final ItemStack item;
     private final WeaponType type;
     @Setter(AccessLevel.NONE)
@@ -28,16 +29,17 @@ public class Weapon {
     private long cooldown = 0;
 
     public Weapon(@NotNull WeaponType type) {
+        this.key = this.hashCode();
         this.type = type;
         this.ammo = type.getAmmo();
         this.magazine = type.getMagazine();
         this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).build();
 
-        Container.get(WeaponService.class).add(this.item.getItemMeta(), this);
+        Container.get(WeaponService.class).add(this.item.hashCode(), this);
     }
 
     public boolean isCooldown() {
-        return System.currentTimeMillis() < (cooldown + Math.round(type.getSpeed() * 1000));
+        return System.currentTimeMillis() < cooldown;
     }
 
     public boolean removeAmmo() {
@@ -48,24 +50,22 @@ public class Weapon {
     }
 
     public boolean addAmmo() {
-        if (this.ammo >= type.getMagazine())
+        if (this.ammo >= type.getAmmo())
             return false;
         this.ammo++;
+        this.magazine--;
         return true;
     }
 
     public void fillAmmo() {
-        int r = type.getMagazine() - this.ammo;
-        magazine = magazine - r;
+        int r = this.type.getAmmo() - this.ammo;
         for (int i = 0; i < r; i++) {
-            if (!this.addAmmo()) {
-                magazine = 0;
-                break;
-            }
+            if (this.magazine <= 0) break;
+            if (!this.addAmmo()) break;
         }
     }
 
     public void updateLore() {
-        ItemBuilder.get(item).setLore("§6" + ammo + "§8/§6" + magazine);
+        ItemBuilder.get(this.item).setLore("§6" + this.ammo + "§8/§6" + this.magazine);
     }
 }

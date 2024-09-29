@@ -2,8 +2,8 @@ package org.apocalypse.api.map;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apocalypse.api.location.Location;
 import org.apocalypse.api.monster.type.MonsterType;
-import org.bukkit.Location;
 
 import java.util.List;
 

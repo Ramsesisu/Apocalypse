@@ -26,20 +26,24 @@ public class WeaponListener implements Listener {
         if (item == null) return;
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
 
-        Weapon weapon = Container.get(WeaponService.class).get(item.getItemMeta());
+        Player player = event.getPlayer();
+        Weapon weapon = Container.get(WeaponService.class).get(item.hashCode());
         if (weapon == null) return;
         event.setCancelled(true);
         if (weapon.isCooldown()) return;
-        if (!weapon.removeAmmo()) return;
+        if (!weapon.removeAmmo()) {
+            this.reload(player, item);
+            return;
+        }
 
-        Player player = event.getPlayer();
         Bullet bullet = new Bullet(weapon.getType().getBullet());
         bullet.shoot(player, weapon.getType().getBullet());
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0F, 1.5F);
-        weapon.setCooldown(System.currentTimeMillis());
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0F, 1.2F);
+        weapon.setCooldown(System.currentTimeMillis() + Math.round(weapon.getType().getSpeed() * 1000));
         weapon.updateLore();
         player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
         item.setItemMeta(weapon.getItem().getItemMeta());
+        weapon.setKey(item.hashCode());
     }
 
     @EventHandler
@@ -48,9 +52,20 @@ public class WeaponListener implements Listener {
 
         ItemStack item = event.getItemDrop().getItemStack();
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
+        reload(event.getPlayer(), item);
+    }
 
-        Weapon weapon = Container.get(WeaponService.class).get(item.getItemMeta());
+    public void reload(Player player, ItemStack item) {
+        Weapon weapon = Container.get(WeaponService.class).get(item.hashCode());
+        if (weapon == null) return;
+
         weapon.fillAmmo();
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 0.2F, 1.2F);
+        weapon.setCooldown(System.currentTimeMillis() + Math.round(weapon.getType().getSpeed() * 3000));
         weapon.updateLore();
+        player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
+        item.setItemMeta(weapon.getItem().getItemMeta());
+
+        weapon.setKey(item.hashCode());
     }
 }
