@@ -6,6 +6,6 @@ import org.bukkit.entity.EntityType;
 public class Zombie extends MonsterType {
 
     public Zombie() {
-        super(EntityType.ZOMBIE);
+        super(EntityType.ZOMBIE, 20, 5);
     }
 }

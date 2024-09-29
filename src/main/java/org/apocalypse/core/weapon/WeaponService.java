@@ -5,5 +5,4 @@ import org.apocalypse.api.weapon.Weapon;
 import org.bukkit.inventory.ItemStack;
 
 public class WeaponService extends Service<ItemStack, Weapon> {
-
 }

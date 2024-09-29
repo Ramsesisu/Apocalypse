@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings({"deprecation", "UnusedReturnValue"})
 public class ItemBuilder {
 
     private final ItemStack item;
@@ -111,7 +112,8 @@ public class ItemBuilder {
     public String getLore() {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            return meta.getLore().get(0);
+            if (meta.getLore() != null)
+                return meta.getLore().getFirst();
         }
         return null;
     }
@@ -166,7 +168,9 @@ public class ItemBuilder {
         return new ItemBuilder(this.item);
     }
 
+    @Override
     @SneakyThrows
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public ItemBuilder clone() {
         return new ItemBuilder(this.item.clone());
     }

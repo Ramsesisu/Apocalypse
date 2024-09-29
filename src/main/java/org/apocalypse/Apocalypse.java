@@ -46,6 +46,7 @@ public final class Apocalypse extends JavaPlugin {
                 .collect(Collectors.toSet());
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Set<Class<? extends T>> findClasses(final Class<T> superClass) throws IOException {
         return ClassPath.from(Apocalypse.class.getClassLoader())
                 .getAllClasses()
