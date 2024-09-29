@@ -9,7 +9,6 @@ public abstract class Service<K, V> {
 
     protected final Map<K, V> list = new HashMap<>();
 
-    @NonNull
     public V get(K key) {
         return list.get(key);
     }

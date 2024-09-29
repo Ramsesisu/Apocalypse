@@ -12,4 +12,10 @@ public class PlayerService extends Service<UUID, Survivor> {
     public @NotNull Survivor get(OfflinePlayer player) {
         return super.get(player.getUniqueId());
     }
+
+    public Survivor register(OfflinePlayer player) {
+        Survivor survivor = new Survivor(player);
+        this.list.put(player.getUniqueId(), survivor);
+        return survivor;
+    }
 }

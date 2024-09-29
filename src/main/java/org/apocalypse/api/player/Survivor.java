@@ -1,5 +1,6 @@
 package org.apocalypse.api.player;
 
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.apocalypse.api.command.Prefix;
@@ -9,10 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public record Survivor(OfflinePlayer player) {
+@Getter
+public class Survivor {
 
-    public OfflinePlayer getPlayer() {
-        return player;
+    private final OfflinePlayer player;
+
+    public Survivor(OfflinePlayer player) {
+        this.player = player;
     }
 
     public Player online() {
@@ -46,7 +50,7 @@ public record Survivor(OfflinePlayer player) {
     }
 
     public void sendMessage(Prefix prefix, String msg, String... args) {
-        this.sendMessage(prefix.getPrefix() + msg, args);
+        this.sendMessage(prefix.getPrefix().append(Component.text(msg)), args);
     }
 
     public void sendRawMessage(Object object) {

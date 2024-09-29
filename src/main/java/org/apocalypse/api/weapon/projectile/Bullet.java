@@ -1,6 +1,7 @@
 package org.apocalypse.api.weapon.projectile;
 
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import org.apocalypse.api.weapon.projectile.type.BulletType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -28,6 +29,5 @@ public class Bullet {
         this.projectile = shooter.launchProjectile(type.getProjectile(), direction);
         this.projectile.setShooter(shooter);
         this.projectile.setVelocity(direction.multiply(type.getSpeed()));
-        this.projectile.setGravity(false);
     }
 }

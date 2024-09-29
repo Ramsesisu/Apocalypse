@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apocalypse.api.builder.ItemBuilder;
+import org.apocalypse.api.service.container.Container;
 import org.apocalypse.api.weapon.type.WeaponType;
+import org.apocalypse.core.weapon.WeaponService;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,13 +22,22 @@ public class Weapon {
     private final ItemStack item;
     private final WeaponType type;
     @Setter(AccessLevel.NONE)
-    private int ammo = 0;
-    private int magazine = 0;
+    private int ammo;
+    private int magazine;
     private boolean enchanted = false;
+    private long cooldown = 0;
 
     public Weapon(@NotNull WeaponType type) {
-        this.item = ItemBuilder.create(type.getItem()).setName(type.getName()).build();
         this.type = type;
+        this.ammo = type.getAmmo();
+        this.magazine = type.getMagazine();
+        this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine + "§8 " + type.getBullet().getName()).build();
+
+        Container.get(WeaponService.class).add(this.item, this);
+    }
+
+    public boolean isCooldown() {
+        return System.currentTimeMillis() < (cooldown + Math.round(type.getSpeed() * 1000));
     }
 
     public boolean removeAmmo() {
@@ -55,6 +66,6 @@ public class Weapon {
     }
 
     public void updateLore() {
-        ItemBuilder.create(item).setLore("§6" + ammo + "§8/§6" + magazine);
+        ItemBuilder.create(item).setLore("§6" + ammo + "§8/§6" + magazine + "§8 " + type.getBullet().getName());
     }
 }

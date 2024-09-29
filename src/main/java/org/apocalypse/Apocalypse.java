@@ -56,12 +56,13 @@ public final class Apocalypse extends JavaPlugin {
     @SuppressWarnings("UnstableApiUsage")
     private void registerCommands() {
         final Set<Class<? extends CommandExecutor>> classes = findClasses(CommandExecutor.class);
+        Bukkit.getLogger().info("Found " + classes.size() + " commands.");
         CommandMap commandMap;
         final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
         commandMapField.setAccessible(true);
         commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
         for (final Class<?> clazz : classes) {
-            if (Command.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(Command.class)) {
+            if (clazz.isAnnotationPresent(Command.class)) {
                 final Command command = clazz.getAnnotation(Command.class);
                 final CommandExecutor commandExecutor = (CommandExecutor) clazz.getConstructor().newInstance();
                 commandExecutor.setMain(this);
