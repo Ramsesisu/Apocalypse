@@ -3,11 +3,19 @@ package org.apocalypse;
 import com.google.common.reflect.ClassPath;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apocalypse.api.command.Command;
+import org.apocalypse.api.command.CommandExecutor;
+import org.apocalypse.api.command.CommandImplementation;
 import org.apocalypse.api.service.container.Container;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.inject.Inject;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,21 +28,60 @@ public final class Apocalypse extends JavaPlugin {
         return INSTANCE;
     }
 
-    @SneakyThrows
     @Override
     public void onEnable() {
         INSTANCE = this;
 
         Container.register();
 
-        for (Class<? extends Listener> listener : findClasses(Listener.class)) {
-            this.getServer().getPluginManager().registerEvents(listener.getConstructor().newInstance(), getInstance());
-        }
+        this.registerListener();
+        this.registerCommands();
     }
 
     @Override
     public void onDisable() {
 
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("UnstableApiUsage")
+    private void registerListener() {
+        for (Class<? extends Listener> listener : findClasses(Listener.class)) {
+            this.getServer().getPluginManager().registerEvents(listener.getConstructor().newInstance(), getInstance());
+            Bukkit.getLogger().info("Registered Listener: " + listener.getSimpleName());
+        }
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("UnstableApiUsage")
+    private void registerCommands() {
+        final Set<Class<? extends CommandExecutor>> classes = findClasses(CommandExecutor.class);
+        CommandMap commandMap;
+        final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+        commandMapField.setAccessible(true);
+        commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
+        for (final Class<?> clazz : classes) {
+            if (Command.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(Command.class)) {
+                final Command command = clazz.getAnnotation(Command.class);
+                final CommandExecutor commandExecutor = (CommandExecutor) clazz.getConstructor().newInstance();
+                commandExecutor.setMain(this);
+                final CommandImplementation commandImplementation = new CommandImplementation(command.name(), commandExecutor, command);
+                commandImplementation.setAliases(Arrays.asList(command.aliases()));
+                commandMap.register(command.group(), commandImplementation);
+                this.injectServices(commandExecutor);
+                Bukkit.getLogger().info("Registered Command: " + command.name());
+            }
+        }
+    }
+
+    @SneakyThrows
+    private void injectServices(Object object) {
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Inject.class)) {
+                field.setAccessible(true);
+                field.set(object, Container.get(field.getType()));
+            }
+        }
     }
 
     public static Set<Class<?>> findClasses(final String packageName) throws IOException {

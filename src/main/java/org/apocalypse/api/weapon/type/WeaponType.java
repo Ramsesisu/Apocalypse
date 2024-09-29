@@ -1,9 +1,9 @@
-package org.apocalypse.api.weapon.types;
+package org.apocalypse.api.weapon.type;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apocalypse.api.weapon.Weapon;
-import org.apocalypse.api.weapon.projectile.types.BulletType;
+import org.apocalypse.api.weapon.projectile.type.BulletType;
 import org.bukkit.Material;
 
 @Getter

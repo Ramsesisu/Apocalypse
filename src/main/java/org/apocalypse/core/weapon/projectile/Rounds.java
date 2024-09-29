@@ -1,6 +1,6 @@
-package org.apocalypse.core.weapon.projectiles;
+package org.apocalypse.core.weapon.projectile;
 
-import org.apocalypse.api.weapon.projectile.types.BulletType;
+import org.apocalypse.api.weapon.projectile.type.BulletType;
 import org.bukkit.entity.Arrow;
 
 public class Rounds extends BulletType {

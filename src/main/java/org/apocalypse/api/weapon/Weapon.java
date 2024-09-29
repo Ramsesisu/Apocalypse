@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apocalypse.api.builder.ItemBuilder;
-import org.apocalypse.api.weapon.types.WeaponType;
+import org.apocalypse.api.weapon.type.WeaponType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 

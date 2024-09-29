@@ -1,10 +1,10 @@
-package org.apocalypse.core.weapon.handler;
+package org.apocalypse.core.weapon.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-public class HitHandler implements Listener {
+public class HitListener implements Listener {
 
     @EventHandler
     public void onBullet(ProjectileHitEvent event) {

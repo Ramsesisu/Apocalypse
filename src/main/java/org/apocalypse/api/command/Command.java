@@ -1,12 +1,20 @@
 package org.apocalypse.api.command;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
 
     String name();
 
     String usage();
 
-    String permissions();
+    String group() default "apocalypse";
+
+    String permissions() default "";
+
+    boolean op() default false;
 
     String[] aliases() default {};
 

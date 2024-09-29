@@ -1,6 +1,5 @@
 package org.apocalypse.api.command;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apocalypse.Apocalypse;
 import org.apocalypse.api.player.Survivor;
@@ -16,7 +15,6 @@ import java.util.logging.Level;
 public abstract class CommandExecutor {
 
     protected Apocalypse apocalypse;
-    @Getter
     @Setter
     protected Prefix prefix;
 
@@ -59,6 +57,12 @@ public abstract class CommandExecutor {
             this.sendNoPermissionMessage(survivor);
             return false;
         }
+
+        if (command.op() && !survivor.getPlayer().isOp()) {
+            this.sendNoPermissionMessage(survivor);
+            return false;
+        }
+
         return true;
     }
 
@@ -83,7 +87,7 @@ public abstract class CommandExecutor {
         survivor.sendMessage("mcrp.message.no-permission");
     }
 
-    public void setMcRoleplayMain(Apocalypse apocalypse) {
+    public void setMain(Apocalypse apocalypse) {
         this.apocalypse = apocalypse;
     }
 }

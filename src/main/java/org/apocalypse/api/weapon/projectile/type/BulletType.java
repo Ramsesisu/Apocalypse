@@ -1,4 +1,4 @@
-package org.apocalypse.api.weapon.projectile.types;
+package org.apocalypse.api.weapon.projectile.type;
 
 import lombok.Getter;
 import org.bukkit.entity.Projectile;

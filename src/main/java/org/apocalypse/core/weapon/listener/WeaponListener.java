@@ -1,4 +1,4 @@
-package org.apocalypse.core.weapon.handler;
+package org.apocalypse.core.weapon.listener;
 
 import org.apocalypse.api.service.container.Container;
 import org.apocalypse.api.weapon.Weapon;
@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class WeaponHandler implements Listener {
+public class WeaponListener implements Listener {
 
     @EventHandler
     public void onShoot(PlayerInteractEvent event) {

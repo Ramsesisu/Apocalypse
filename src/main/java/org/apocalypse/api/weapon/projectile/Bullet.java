@@ -1,7 +1,7 @@
 package org.apocalypse.api.weapon.projectile;
 
 import lombok.Getter;
-import org.apocalypse.api.weapon.projectile.types.BulletType;
+import org.apocalypse.api.weapon.projectile.type.BulletType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
