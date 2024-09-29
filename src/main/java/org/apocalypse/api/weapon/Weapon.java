@@ -31,7 +31,7 @@ public class Weapon {
         this.type = type;
         this.ammo = type.getAmmo();
         this.magazine = type.getMagazine();
-        this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine + "§8 " + type.getBullet().getName()).build();
+        this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).build();
 
         Container.get(WeaponService.class).add(this.item, this);
     }
@@ -66,6 +66,6 @@ public class Weapon {
     }
 
     public void updateLore() {
-        ItemBuilder.create(item).setLore("§6" + ammo + "§8/§6" + magazine + "§8 " + type.getBullet().getName());
+        ItemBuilder.get(item).setLore("§6" + ammo + "§8/§6" + magazine);
     }
 }

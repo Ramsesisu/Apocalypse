@@ -1,4 +1,4 @@
-package org.apocalypse.core.administration.command;
+package org.apocalypse.core.debug;
 
 import org.apocalypse.api.command.Command;
 import org.apocalypse.api.command.CommandExecutor;
@@ -9,6 +9,7 @@ import org.apocalypse.api.weapon.Weapon;
 import org.apocalypse.api.weapon.type.WeaponType;
 import org.apocalypse.core.weapon.WeaponRecord;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -29,7 +30,8 @@ public class GiveWeaponCommand extends CommandExecutor {
         WeaponRecord weaponRecord = Container.get(WeaponRecord.class);
         WeaponType type = weaponRecord.get(args[0]);
         Weapon weapon = new Weapon(type);
-        survivor.give(weapon.getItem());
+        ItemStack item = weapon.getItem();
+        survivor.give(item);
 
         survivor.sendMessage(prefix, "§cReceived the weapon " + type.getName() + ".");
     }

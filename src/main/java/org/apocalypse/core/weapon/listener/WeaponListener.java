@@ -7,6 +7,7 @@ import org.apocalypse.api.weapon.Weapon;
 import org.apocalypse.api.weapon.projectile.Bullet;
 import org.apocalypse.core.weapon.WeaponRecord;
 import org.apocalypse.core.weapon.WeaponService;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,9 +35,11 @@ public class WeaponListener implements Listener {
         Player player = event.getPlayer();
         Bullet bullet = new Bullet(weapon.getType().getBullet());
         bullet.shoot(player, weapon.getType().getBullet());
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0F, 1.5F);
         weapon.setCooldown(System.currentTimeMillis());
         weapon.updateLore();
         player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
+        item.setItemMeta(weapon.getItem().getItemMeta());
     }
 
     @EventHandler
