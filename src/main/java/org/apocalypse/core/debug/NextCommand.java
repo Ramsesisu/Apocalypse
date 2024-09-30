@@ -8,7 +8,7 @@ import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.service.container.Container;
 import org.apocalypse.core.lobby.LobbyService;
 
-@Command(name = "next", usage = "/next", op = true, description = "Moves to the next wave.", prefix = "Debug", prefixColor = Prefix.Color.MAROON, prefixGradient = Prefix.Color.PURPLE)
+@Command(name = "next", usage = "/next", op = true, description = "Moves to the next wave.", prefix = "Debug", prefixColor = Prefix.Color.LIME, prefixGradient = Prefix.Color.PURPLE)
 public class NextCommand extends CommandExecutor {
 
     @Override

@@ -8,6 +8,7 @@ import org.apocalypse.api.service.container.Container;
 import org.apocalypse.api.weapon.Weapon;
 import org.apocalypse.api.weapon.type.WeaponType;
 import org.apocalypse.core.weapon.WeaponRecord;
+import org.apocalypse.core.weapon.WeaponService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,8 @@ public class WeaponCommand extends CommandExecutor {
         Weapon weapon = new Weapon(type);
         ItemStack item = weapon.getItem();
         survivor.give(item);
-        weapon.setKey(item.hashCode());
+        WeaponService weaponService = Container.get(WeaponService.class);
+        weaponService.add(weapon.getKey(), weapon);
 
         survivor.sendMessage(prefix, "§cReceived the weapon " + type.getName() + ".");
     }

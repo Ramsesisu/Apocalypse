@@ -2,13 +2,13 @@ package org.apocalypse.api.monster.type;
 
 import lombok.Getter;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Creature;
 
 @Getter
 public abstract class MonsterType {
 
     private final String name;
-    private final EntityType type;
+    private final Class<? extends Creature> type;
     private final int first;
     private final int last;
     private final double health;
@@ -19,7 +19,7 @@ public abstract class MonsterType {
     private final Material leggings;
     private final Material boots;
 
-    public MonsterType(String name, EntityType type, int first, int last, double health, double damage) {
+    public MonsterType(String name, Class<? extends Creature> type, int first, int last, double health, double damage) {
         this.name = name;
         this.type = type;
         this.first = first;
@@ -33,7 +33,7 @@ public abstract class MonsterType {
         this.boots = Material.AIR;
     }
 
-    public MonsterType(String name, EntityType type, int first, int last, double health, double damage, Material weapon) {
+    public MonsterType(String name, Class<? extends Creature> type, int first, int last, double health, double damage, Material weapon) {
         this.name = name;
         this.type = type;
         this.first = first;
@@ -47,7 +47,7 @@ public abstract class MonsterType {
         this.boots = Material.AIR;
     }
 
-    public MonsterType(String name, EntityType type, int first, int last, double health, double damage, Material weapon, Material helmet, Material chestplate, Material leggings, Material boots) {
+    public MonsterType(String name, Class<? extends Creature> type, int first, int last, double health, double damage, Material weapon, Material helmet, Material chestplate, Material leggings, Material boots) {
         this.name = name;
         this.type = type;
         this.first = first;

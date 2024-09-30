@@ -3,6 +3,7 @@ package org.apocalypse.api.lobby;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apocalypse.api.lobby.wave.Wave;
 import org.apocalypse.api.location.Location;
 import org.apocalypse.api.map.Map;
 import org.apocalypse.api.map.area.Area;
@@ -18,21 +19,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 public class Lobby {
 
     private final List<Survivor> survivors;
-    private final List<Monster> monsters = new ArrayList<>();
+    private final List<Monster> monster = new ArrayList<>();
     private final List<? extends MonsterType> types;
     private final Map map;
     private final World world;
     private Loot loot;
-    private int wave = 0;
+    private Wave wave;
+    private int round = 0;
 
     @SneakyThrows
     public Lobby(Class<? extends Map> map) {
@@ -43,6 +47,10 @@ public class Lobby {
         this.world.setAutoSave(false);
         this.world.setPVP(false);
         this.world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        this.world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        this.world.setGameRule(GameRule.DO_MOB_LOOT, false);
+        this.world.setGameRule(GameRule.MOB_GRIEFING, false);
+        this.world.getEntities().forEach(Entity::remove);
         this.types = this.map.getMonster().stream().map(monster -> {
             try {
                 return monster.getConstructor().newInstance();
@@ -54,10 +62,12 @@ public class Lobby {
 
     public void add(Survivor survivor) {
         this.survivors.add(survivor);
+        this.survivors.forEach(Survivor::updateScoreboard);
     }
 
     public void remove(Survivor survivor) {
         this.survivors.remove(survivor);
+        this.survivors.forEach(Survivor::updateScoreboard);
     }
 
     public int size() {
@@ -65,12 +75,16 @@ public class Lobby {
     }
 
     public void nextWave() {
-        this.wave++;
-        int amount = wave * 5;
+        this.round++;
+        List<MonsterType> monster = this.types.stream()
+                .filter(type -> type.getFirst() <= this.round && type.getLast() >= this.round)
+                .collect(Collectors.toList());
 
-        List<? extends MonsterType> monster = new ArrayList<>(this.types);
-        monster.stream().filter(type -> type.getFirst() >= this.wave && type.getLast() <= this.wave).forEach(monster::remove);
-        Bukkit.getServer().broadcastMessage(String.valueOf(monster));
+        this.wave = new Wave(this, monster, round * 5);
+        this.wave.start();
+
+        this.survivors.forEach(Survivor::updateScoreboard);
+        this.survivors.forEach(survivor -> survivor.sendTitle("§cWave §l" + this.round + "§c!", "§7Prepare yourself."));
     }
 
     public void win() {

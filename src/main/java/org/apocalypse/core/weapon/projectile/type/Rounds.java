@@ -1,4 +1,4 @@
-package org.apocalypse.core.weapon.projectile;
+package org.apocalypse.core.weapon.projectile.type;
 
 import org.apocalypse.api.weapon.projectile.type.BulletType;
 import org.bukkit.entity.Arrow;

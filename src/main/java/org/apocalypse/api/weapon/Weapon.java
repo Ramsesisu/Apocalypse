@@ -4,11 +4,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apocalypse.api.builder.ItemBuilder;
-import org.apocalypse.api.service.container.Container;
 import org.apocalypse.api.weapon.type.WeaponType;
-import org.apocalypse.core.weapon.WeaponService;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,7 +19,7 @@ public class Weapon {
         GUN
     }
 
-    private int key;
+    private final UUID key;
     private final ItemStack item;
     private final WeaponType type;
     @Setter(AccessLevel.NONE)
@@ -29,13 +29,11 @@ public class Weapon {
     private long cooldown = 0;
 
     public Weapon(@NotNull WeaponType type) {
+        this.key = UUID.randomUUID();
         this.type = type;
         this.ammo = type.getAmmo();
         this.magazine = type.getMagazine();
-        this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).build();
-
-        this.key = this.getItem().hashCode();
-        Container.get(WeaponService.class).add(this.key, this);
+        this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).saveData("uuid", key.toString()).build();
     }
 
     public boolean isCooldown() {

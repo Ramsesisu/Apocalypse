@@ -24,7 +24,7 @@ public class Survivor {
 
     @Setter(AccessLevel.NONE)
     private final OfflinePlayer player;
-    private final Scoreboard scoreboard;
+    private Scoreboard scoreboard;
     private Lobby lobby = null;
     private int money = 0;
     private int kills;
@@ -127,8 +127,16 @@ public class Survivor {
     }
 
     public void setScoreboard(Scoreboard scoreboard) {
-        if (this.isOnline())
-            this.online().setScoreboard(scoreboard.get());
+        if (this.isOnline()) {
+            this.scoreboard = scoreboard;
+            this.online().setScoreboard(this.scoreboard.get());
+        }
+    }
+
+    public void updateScoreboard() {
+        if (this.isOnline()) {
+            this.scoreboard.update(this);
+        }
     }
 
     public boolean addMoney(int amount) {
@@ -155,5 +163,11 @@ public class Survivor {
     public void sendTitle(String title) {
         if (this.isOnline())
             this.online().sendTitle(title, "", 10, 70, 20);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void sendTitle(String title, String subtitle) {
+        if (this.isOnline())
+            this.online().sendTitle(title, subtitle, 10, 70, 20);
     }
 }

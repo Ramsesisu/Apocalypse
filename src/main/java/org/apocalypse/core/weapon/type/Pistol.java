@@ -1,7 +1,7 @@
 package org.apocalypse.core.weapon.type;
 
 import org.apocalypse.api.weapon.type.WeaponType;
-import org.apocalypse.core.weapon.projectile.Rounds;
+import org.apocalypse.core.weapon.projectile.type.Rounds;
 import org.bukkit.Material;
 
 public class Pistol extends WeaponType {

@@ -59,7 +59,7 @@ public final class Apocalypse extends JavaPlugin {
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
-                getLogger().info("Deleted world folder.");
+                getLogger().info("Deleted worlds folder.");
             } catch (IOException e) {
                 Bukkit.getServer().getLogger().info("Failed to delete world folder.");
             }

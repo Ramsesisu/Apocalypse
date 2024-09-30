@@ -1,7 +1,7 @@
 package org.apocalypse.core.weapon.type;
 
 import org.apocalypse.api.weapon.type.WeaponType;
-import org.apocalypse.core.weapon.projectile.Cartridges;
+import org.apocalypse.core.weapon.projectile.type.Cartridges;
 import org.bukkit.Material;
 
 public class Uzi extends WeaponType {

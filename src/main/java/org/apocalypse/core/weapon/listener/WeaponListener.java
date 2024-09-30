@@ -19,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
-
 public class WeaponListener implements Listener {
 
     @EventHandler
@@ -32,7 +30,7 @@ public class WeaponListener implements Listener {
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
 
         Player player = event.getPlayer();
-        Weapon weapon = Container.get(WeaponService.class).get(item.hashCode());
+        Weapon weapon = Container.get(WeaponService.class).get(item);
         if (weapon == null) return;
         event.setCancelled(true);
         if (weapon.isCooldown()) return;
@@ -45,14 +43,13 @@ public class WeaponListener implements Listener {
         weapon.updateLore();
         player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
         item.setItemMeta(weapon.getItem().getItemMeta());
-        weapon.setKey(item.hashCode());
     }
 
     @EventHandler
     public void onReload(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
-        Weapon weapon = Container.get(WeaponService.class).get(item.hashCode());
+        Weapon weapon = Container.get(WeaponService.class).get(item);
         if (weapon == null) return;
         if (weapon.isCooldown()) return;
         if (weapon.isFull()) return;
@@ -65,23 +62,23 @@ public class WeaponListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (damageable.getDamage() <= 0) this.cancel();
+                    if (damageable.getDamage() <= 0) {
+                        item.setItemMeta(weapon.getItem().getItemMeta());
+                        this.cancel();
+                    }
                     int damage = damageable.getDamage() - step;
                     if (damage < 0) damage = 0;
                     damageable.setDamage(damage);
                     item.setItemMeta(damageable);
                     player.getInventory().setItem(slot, item);
-                    weapon.setKey(Objects.requireNonNull(player.getInventory().getItem(slot)).hashCode());
                 }
-            }.runTaskTimer(Apocalypse.getInstance(), 0L, Math.round(weapon.getType().getSpeed()) * 5L);
+            }.runTaskTimer(Apocalypse.getInstance(), 0L, Math.round(weapon.getType().getSpeed()) * 6L);
         }
 
         weapon.fillAmmo();
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 0.2F, 1.2F);
         weapon.setCooldown(System.currentTimeMillis() + Math.round(weapon.getType().getSpeed() * 3000));
-        weapon.updateLore();
         player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
-        item.setItemMeta(weapon.getItem().getItemMeta());
-        weapon.setKey(item.hashCode());
+        weapon.updateLore();
     }
 }

@@ -1,7 +1,7 @@
 package org.apocalypse.core.weapon.type;
 
 import org.apocalypse.api.weapon.type.WeaponType;
-import org.apocalypse.core.weapon.projectile.Magnums;
+import org.apocalypse.core.weapon.projectile.type.Magnums;
 import org.bukkit.Material;
 
 public class Revolver extends WeaponType {

@@ -66,13 +66,14 @@ public abstract class BulletType {
             Projectile projectile = shooter.launchProjectile(this.projectile, direction);
             projectile.setShooter(shooter);
             projectile.setVelocity(direction.multiply(this.speed));
+            projectile.setCustomName(this.name);
             return List.of(projectile);
         } else {
             List<Projectile> projectiles = new ArrayList<>();
             Random random = new Random();
             for (int i = 0; i < this.amount; i++) {
                 Vector direction = shooter.getLocation().add(0, 1.5, 0).getDirection();
-                double offset = (double) this.amount / 15;
+                double offset = (double) this.amount / 25;
                 direction.add(new Vector(
                         (random.nextDouble() - 0.5) * offset,
                         (random.nextDouble() - 0.5) * offset,
@@ -81,6 +82,7 @@ public abstract class BulletType {
                 Projectile projectile = shooter.launchProjectile(this.projectile, direction);
                 projectile.setShooter(shooter);
                 projectile.setVelocity(direction.multiply(this.speed));
+                projectile.setCustomName(this.name);
                 projectiles.add(projectile);
             }
             return projectiles;

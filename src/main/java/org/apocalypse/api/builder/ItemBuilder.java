@@ -2,12 +2,16 @@ package org.apocalypse.api.builder;
 
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
+import org.apocalypse.Apocalypse;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 import java.util.List;
@@ -162,6 +166,22 @@ public class ItemBuilder {
             this.item.setItemMeta(meta);
         }
         return this;
+    }
+
+    public ItemBuilder saveData(String key, String value) {
+        NamespacedKey name = new NamespacedKey(Apocalypse.getInstance(), key);
+        ItemMeta meta = this.item.getItemMeta();
+        PersistentDataContainer data = meta.getPersistentDataContainer();
+        data.set(name, PersistentDataType.STRING, value);
+        this.item.setItemMeta(meta);
+        return this;
+    }
+
+    public String loadData(String key) {
+        NamespacedKey name = new NamespacedKey(Apocalypse.getInstance(), key);
+        ItemMeta meta = this.item.getItemMeta();
+        PersistentDataContainer data = meta.getPersistentDataContainer();
+        return data.get(name, PersistentDataType.STRING);
     }
 
     public ItemBuilder copy() {

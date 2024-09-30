@@ -12,7 +12,7 @@ import java.util.List;
 public class TeamScoreBoard extends Scoreboard {
 
     public TeamScoreBoard(Survivor survivor) {
-        super(survivor);
+        super("Test", survivor);
     }
 
     @Override
@@ -22,8 +22,8 @@ public class TeamScoreBoard extends Scoreboard {
         List<String> list = new ArrayList<>();
         list.add("§8§o" + TimeUtils.getFormattedCurrentDate());
         list.add("");
-        list.add("§cWave §c§l" + lobby.getWave());
-        list.add("§7Monster§8: §a" + lobby.getMonsters().size());
+        list.add("§cWave §c§l" + lobby.getRound());
+        list.add("§7Monster§8: §a" + lobby.getMonster().size());
         list.add("");
         for (Survivor player : lobby.getSurvivors())
             list.add((player.getName().equals(survivor.getName()) ? "§a" : "§7") + player.getName() + "§8: §6" + player.getMoney() + "$");

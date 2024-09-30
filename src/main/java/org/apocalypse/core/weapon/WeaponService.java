@@ -1,15 +1,20 @@
 package org.apocalypse.core.weapon;
 
+import org.apocalypse.api.builder.ItemBuilder;
 import org.apocalypse.api.service.Service;
 import org.apocalypse.api.weapon.Weapon;
+import org.bukkit.inventory.ItemStack;
 
-public class WeaponService extends Service<Integer, Weapon> {
+import java.util.UUID;
 
-    @Override
-    public Weapon get(Integer key) {
-        for (Weapon weapon : this.list.values()) {
-            if (weapon.getKey() == key)
-                return weapon;
-        } return null;
+public class WeaponService extends Service<UUID, Weapon> {
+
+    public Weapon get(final String key) {
+        return this.get(UUID.fromString(key));
+    }
+
+    public Weapon get(final ItemStack item) {
+        String uuid = ItemBuilder.get(item).loadData("uuid");
+        return this.get(uuid);
     }
 }

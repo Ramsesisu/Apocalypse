@@ -1,7 +1,7 @@
 package org.apocalypse.core.weapon.type;
 
 import org.apocalypse.api.weapon.type.WeaponType;
-import org.apocalypse.core.weapon.projectile.Shells;
+import org.apocalypse.core.weapon.projectile.type.Shells;
 import org.bukkit.Material;
 
 public class Shotgun extends WeaponType {

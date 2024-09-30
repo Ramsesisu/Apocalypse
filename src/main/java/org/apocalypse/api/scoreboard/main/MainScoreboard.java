@@ -6,7 +6,7 @@ import org.apocalypse.api.scoreboard.Scoreboard;
 public class MainScoreboard extends Scoreboard {
 
     public MainScoreboard(Survivor survivor) {
-        super(survivor);
+        super("Main", survivor);
     }
 
     @Override

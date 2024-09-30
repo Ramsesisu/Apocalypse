@@ -2,8 +2,10 @@ package org.apocalypse.core.player.listener;
 
 import net.kyori.adventure.text.Component;
 import org.apocalypse.api.command.Prefix;
+import org.apocalypse.api.location.Location;
 import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.service.container.Container;
+import org.apocalypse.api.utils.LocationUtils;
 import org.apocalypse.core.lobby.LobbyService;
 import org.apocalypse.core.player.PlayerService;
 import org.bukkit.entity.Player;
@@ -21,8 +23,10 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         event.joinMessage(prefix.getPrefix().append(Component.text( "§e§l" + player.getName() + "§e joined!")));
 
-        player.getInventory().clear();
-        Container.get(PlayerService.class).register(player);
+        PlayerService playerService = Container.get(PlayerService.class);
+        Survivor survivor = playerService.register(player);
+        survivor.getInventory().clear();
+        survivor.teleport(LocationUtils.WORLD, new Location(LocationUtils.WORLD.getSpawnLocation()));
     }
 
     @EventHandler
