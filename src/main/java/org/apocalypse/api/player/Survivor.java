@@ -1,11 +1,17 @@
 package org.apocalypse.api.player;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.apocalypse.api.command.Prefix;
 import org.apocalypse.api.lobby.Lobby;
 import org.apocalypse.api.location.Location;
+import org.apocalypse.api.scoreboard.Scoreboard;
+import org.apocalypse.api.scoreboard.main.MainScoreboard;
+import org.apocalypse.api.scoreboard.team.TeamScoreBoard;
+import org.apocalypse.api.utils.LocationUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -13,12 +19,20 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 @Getter
+@Setter
 public class Survivor {
 
+    @Setter(AccessLevel.NONE)
     private final OfflinePlayer player;
+    private final Scoreboard scoreboard;
+    private Lobby lobby = null;
+    private int money = 0;
+    private int kills;
+
 
     public Survivor(OfflinePlayer player) {
         this.player = player;
+        this.scoreboard = new MainScoreboard(this);
     }
 
     public Player online() {
@@ -27,6 +41,10 @@ public class Survivor {
 
     public boolean isOnline() {
         return player.isOnline();
+    }
+
+    public String getName() {
+        return player.getName();
     }
 
     public boolean hasPermission(String permission) {
@@ -59,11 +77,23 @@ public class Survivor {
         this.sendMessage(String.valueOf(object));
     }
 
-    public void lobby(Lobby lobby) {
+    public void joinLobby(Lobby lobby) {
         if (this.isOnline()) {
             this.teleport(lobby.getWorld(), lobby.getMap().getSpawn());
             if (!lobby.getSurvivors().contains(this))
                 lobby.add(this);
+            this.setLobby(lobby);
+            this.setScoreboard(new TeamScoreBoard(this));
+        }
+    }
+
+    public void leaveLobby() {
+        if (this.isOnline()) {
+            this.teleport(LocationUtils.WORLD, new Location(LocationUtils.WORLD.getSpawnLocation()));
+            if (this.getLobby() != null)
+                this.getLobby().remove(this);
+            this.setLobby(null);
+            this.setScoreboard(new MainScoreboard(this));
         }
     }
 
@@ -94,5 +124,36 @@ public class Survivor {
     public void give(ItemStack item) {
         if (this.isOnline())
             this.online().getInventory().addItem(item);
+    }
+
+    public void setScoreboard(Scoreboard scoreboard) {
+        if (this.isOnline())
+            this.online().setScoreboard(scoreboard.get());
+    }
+
+    public boolean addMoney(int amount) {
+        this.money += amount;
+        return true;
+    }
+
+    public boolean hasMoney(int amount) {
+        return this.money >= amount;
+    }
+
+    public boolean removeMoney(int amount) {
+        if (!this.hasMoney(amount))
+            return false;
+        this.money -= amount;
+        return true;
+    }
+
+    public void addKill() {
+        this.kills++;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void sendTitle(String title) {
+        if (this.isOnline())
+            this.online().sendTitle(title, "", 10, 70, 20);
     }
 }

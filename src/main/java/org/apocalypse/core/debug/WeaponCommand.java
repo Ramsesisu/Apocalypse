@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Command(name = "giveweapon", usage = "/giveweapon [Weapon]", op = true, prefix = "Weapon", description = "Gives a weapon to the player.", prefixColor = Prefix.Color.MAROON, prefixGradient = Prefix.Color.PURPLE)
-public class GiveWeaponCommand extends CommandExecutor {
+@Command(name = "weapon", usage = "/weapon [Weapon]", op = true, prefix = "Weapon", description = "Gives a weapon to the player.", prefixColor = Prefix.Color.MAROON, prefixGradient = Prefix.Color.PURPLE)
+public class WeaponCommand extends CommandExecutor {
 
     @Override
     public void execute(Survivor survivor, String[] args, String name, Command command) {

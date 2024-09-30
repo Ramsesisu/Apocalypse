@@ -16,7 +16,6 @@ public class RepairListener implements Listener {
 
     @EventHandler
     public void onRepair(PlayerToggleSneakEvent event) {
-        if (!event.getPlayer().isSneaking()) return;
         final Survivor survivor = Container.get(PlayerService.class).get(event.getPlayer());
         final Lobby lobby = Container.get(LobbyService.class).find(survivor);
         if (lobby == null) return;

@@ -7,7 +7,7 @@ import org.apocalypse.api.weapon.projectile.type.BulletType;
 import org.bukkit.Material;
 
 @Getter
-public class WeaponType {
+public abstract class WeaponType {
 
     private final String name;
     private final Material item;

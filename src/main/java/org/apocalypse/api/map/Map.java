@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class Map {
+public abstract class Map {
 
     private final String name;
     private final Location spawn;

@@ -14,32 +14,32 @@ public abstract class Scoreboard {
 
     private final org.bukkit.scoreboard.Scoreboard scoreboard;
 
-    public Scoreboard() {
+    public Scoreboard(Survivor survivor) {
         ScoreboardManager manager = Bukkit.getServer().getScoreboardManager();
         this.scoreboard = manager.getNewScoreboard();
         Objective objective = this.scoreboard.registerNewObjective("test", Criteria.DUMMY, Component.text("§e§lAPOCALYPSE"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        survivor.online().setScoreboard(this.scoreboard);
+        this.update(survivor);
     }
 
     public org.bukkit.scoreboard.Scoreboard get() {
         return this.scoreboard;
     }
 
-    public abstract void update(List<String> lines);
+    public abstract void update(Survivor survivor);
 
     public void set(List<String> lines) {
         Objective objective = this.scoreboard.getObjective("test");
         for (String entry : this.scoreboard.getEntries())
             this.scoreboard.resetScores(entry);
-        for (int i = 0; i < lines.size(); i++)
+        int b = 0;
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).isEmpty()) {
+                b++;
+                lines.set(i, new StringBuilder().repeat(" ", b).toString());
+            }
             objective.getScore(lines.get(i)).setScore(lines.size() - i);
-    }
-
-    public void add(Survivor survivor) {
-        survivor.online().setScoreboard(this.scoreboard);
-    }
-
-    public void remove(Survivor survivor) {
-        survivor.online().setScoreboard(Bukkit.getServer().getScoreboardManager().getMainScoreboard());
+        }
     }
 }

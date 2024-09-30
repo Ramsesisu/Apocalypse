@@ -7,6 +7,6 @@ import org.bukkit.Material;
 public class Rifle extends WeaponType {
 
     public Rifle() {
-        super("Rifle", Material.STONE_HOE, false, Ammo.class, 0.2F, 30, 200);
+        super("Rifle", Material.IRON_HOE, false, Ammo.class, 0.2F, 30, 200);
     }
 }

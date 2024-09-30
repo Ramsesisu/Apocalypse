@@ -29,13 +29,13 @@ public class Weapon {
     private long cooldown = 0;
 
     public Weapon(@NotNull WeaponType type) {
-        this.key = this.hashCode();
         this.type = type;
         this.ammo = type.getAmmo();
         this.magazine = type.getMagazine();
         this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).build();
 
-        Container.get(WeaponService.class).add(this.item.hashCode(), this);
+        this.key = this.getItem().hashCode();
+        Container.get(WeaponService.class).add(this.key, this);
     }
 
     public boolean isCooldown() {
@@ -57,6 +57,10 @@ public class Weapon {
         return true;
     }
 
+    public boolean isFull() {
+        return this.ammo >= this.type.getAmmo();
+    }
+
     public void fillAmmo() {
         int r = this.type.getAmmo() - this.ammo;
         for (int i = 0; i < r; i++) {
@@ -66,6 +70,6 @@ public class Weapon {
     }
 
     public void updateLore() {
-        ItemBuilder.get(this.item).setLore("§6" + this.ammo + "§8/§6" + this.magazine);
+        ItemBuilder.get(this.item).setLore("§6" + this.ammo + "§8/§6" + this.magazine).build();
     }
 }

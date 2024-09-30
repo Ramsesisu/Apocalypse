@@ -5,8 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 @Getter
-public class MonsterType {
+public abstract class MonsterType {
 
+    private final String name;
     private final EntityType type;
     private final int first;
     private final int last;
@@ -18,7 +19,8 @@ public class MonsterType {
     private final Material leggings;
     private final Material boots;
 
-    public MonsterType(EntityType type, int first, int last, double health, double damage) {
+    public MonsterType(String name, EntityType type, int first, int last, double health, double damage) {
+        this.name = name;
         this.type = type;
         this.first = first;
         this.last = last;
@@ -31,7 +33,8 @@ public class MonsterType {
         this.boots = Material.AIR;
     }
 
-    public MonsterType(EntityType type, int first, int last, double health, double damage, Material weapon) {
+    public MonsterType(String name, EntityType type, int first, int last, double health, double damage, Material weapon) {
+        this.name = name;
         this.type = type;
         this.first = first;
         this.last = last;
@@ -44,7 +47,8 @@ public class MonsterType {
         this.boots = Material.AIR;
     }
 
-    public MonsterType(EntityType type, int first, int last, double health, double damage, Material weapon, Material helmet, Material chestplate, Material leggings, Material boots) {
+    public MonsterType(String name, EntityType type, int first, int last, double health, double damage, Material weapon, Material helmet, Material chestplate, Material leggings, Material boots) {
+        this.name = name;
         this.type = type;
         this.first = first;
         this.last = last;

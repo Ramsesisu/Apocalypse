@@ -6,16 +6,23 @@ import lombok.SneakyThrows;
 import org.apocalypse.api.command.Command;
 import org.apocalypse.api.command.CommandExecutor;
 import org.apocalypse.api.command.CommandImplementation;
+import org.apocalypse.api.lobby.Lobby;
 import org.apocalypse.api.service.container.Container;
+import org.apocalypse.core.lobby.LobbyService;
+import org.apocalypse.core.map.MapRecord;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,11 +43,27 @@ public final class Apocalypse extends JavaPlugin {
 
         this.registerListener();
         this.registerCommands();
+
+        Container.get(MapRecord.class).unzipWorlds();
     }
 
     @Override
     public void onDisable() {
+        for (Lobby lobby : Container.get(LobbyService.class).getLobbies())
+            Bukkit.getServer().unloadWorld(lobby.getWorld(), false);
 
+        File worldFolder = Container.get(MapRecord.class).getWorldFolder();
+        if (worldFolder.exists()) {
+            try {
+                Files.walk(worldFolder.toPath())
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+                getLogger().info("Deleted world folder.");
+            } catch (IOException e) {
+                Bukkit.getServer().getLogger().info("Failed to delete world folder.");
+            }
+        }
     }
 
     @SneakyThrows

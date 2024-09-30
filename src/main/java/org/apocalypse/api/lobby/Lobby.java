@@ -1,6 +1,7 @@
 package org.apocalypse.api.lobby;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apocalypse.api.location.Location;
 import org.apocalypse.api.map.Map;
@@ -9,53 +10,67 @@ import org.apocalypse.api.map.area.door.Door;
 import org.apocalypse.api.map.area.loot.Loot;
 import org.apocalypse.api.map.area.spawn.Spawn;
 import org.apocalypse.api.map.area.spawn.barrier.Barrier;
+import org.apocalypse.api.monster.Monster;
+import org.apocalypse.api.monster.type.MonsterType;
 import org.apocalypse.api.player.Survivor;
-import org.apocalypse.api.scoreboard.team.TeamScoreBoard;
 import org.apocalypse.api.utils.LocationUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 public class Lobby {
 
     private final List<Survivor> survivors;
+    private final List<Monster> monsters = new ArrayList<>();
+    private final List<? extends MonsterType> types;
     private final Map map;
     private final World world;
-    private final TeamScoreBoard scoreboard;
-    private int round = 1;
+    private Loot loot;
+    private int wave = 0;
 
     @SneakyThrows
     public Lobby(Class<? extends Map> map) {
         this.survivors = new ArrayList<>();
         this.map = map.getConstructor().newInstance();
-        this.world = Bukkit.getServer().createWorld(new WorldCreator("map_" + map.getSimpleName().toLowerCase()));
+        this.world = Bukkit.getServer().createWorld(new WorldCreator("worlds/" + map.getSimpleName().toLowerCase()));
         assert this.world != null;
         this.world.setAutoSave(false);
         this.world.setPVP(false);
         this.world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        this.world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-        this.scoreboard = new TeamScoreBoard();
-        this.scoreboard.update(List.of("Round: " + this.round));
+        this.types = this.map.getMonster().stream().map(monster -> {
+            try {
+                return monster.getConstructor().newInstance();
+            } catch (Exception e) {
+                return null;
+            }
+        }).toList();
     }
 
     public void add(Survivor survivor) {
         this.survivors.add(survivor);
-        this.scoreboard.add(survivor);
     }
 
     public void remove(Survivor survivor) {
         this.survivors.remove(survivor);
-        this.scoreboard.remove(survivor);
     }
 
     public int size() {
         return this.survivors.size();
     }
 
-    public void next() {
-        this.round++;
+    public void nextWave() {
+        this.wave++;
+        int amount = wave * 5;
+
+        List<? extends MonsterType> monster = new ArrayList<>(this.types);
+        monster.stream().filter(type -> type.getFirst() >= this.wave && type.getLast() <= this.wave).forEach(monster::remove);
+        Bukkit.getServer().broadcastMessage(String.valueOf(monster));
     }
 
     public void win() {
@@ -64,6 +79,18 @@ public class Lobby {
 
     public void lose() {
 
+    }
+
+    public Area getArea(Location location) {
+        Area closest = null;
+        double distance = Double.MAX_VALUE;
+        for (Area area : this.map.getAreas()) {
+            double current = area.getLocation().distance(location);
+            if (current < distance) {
+                closest = area;
+                distance = current;
+            }
+        } return closest;
     }
 
     public Door getDoor(Location location) {

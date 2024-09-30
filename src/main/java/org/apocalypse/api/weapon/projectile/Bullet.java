@@ -1,16 +1,20 @@
 package org.apocalypse.api.weapon.projectile;
 
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
+import org.apocalypse.Apocalypse;
 import org.apocalypse.api.weapon.projectile.type.BulletType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class Bullet {
 
-    private Projectile projectile = null;
+    private List<Projectile> projectiles = new ArrayList<>();
     private final BulletType type;
     private final float range;
 
@@ -24,10 +28,19 @@ public class Bullet {
         this.range = range;
     }
 
-    public void shoot(Player shooter, BulletType type) {
-        Vector direction = shooter.getLocation().add(0, 1.5, 0).getDirection();
-        this.projectile = shooter.launchProjectile(type.getProjectile(), direction);
-        this.projectile.setShooter(shooter);
-        this.projectile.setVelocity(direction.multiply(type.getSpeed()));
+    public Projectile getProjectile() {
+        if (this.projectiles.isEmpty()) return null;
+        return this.projectiles.getFirst();
+    }
+
+    public boolean isMultishot() {
+        return this.projectiles.size() > 1;
+    }
+
+    public void shoot(Player shooter) {
+        this.projectiles = this.type.shoot(shooter);
+        if (this.type.getRange() > 0)
+            Bukkit.getScheduler().runTaskLater(Apocalypse.getInstance(),
+                    () -> this.projectiles.forEach(Entity::remove), this.type.getRange());
     }
 }

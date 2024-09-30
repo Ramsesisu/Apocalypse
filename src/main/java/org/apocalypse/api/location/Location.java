@@ -70,6 +70,6 @@ public class Location {
     }
 
     public double distance(Location location) {
-        return this.location.distance(location.get());
+        return this.get(location.getWorld()).distance(location.get());
     }
 }

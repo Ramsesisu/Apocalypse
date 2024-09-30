@@ -1,13 +1,16 @@
 package org.apocalypse.api.scoreboard.main;
 
+import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.scoreboard.Scoreboard;
-
-import java.util.List;
 
 public class MainScoreboard extends Scoreboard {
 
+    public MainScoreboard(Survivor survivor) {
+        super(survivor);
+    }
+
     @Override
-    public void update(List<String> lines) {
+    public void update(Survivor survivor) {
 
     }
 }
