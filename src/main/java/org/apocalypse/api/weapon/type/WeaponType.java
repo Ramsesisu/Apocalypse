@@ -12,6 +12,7 @@ public class WeaponType {
     private final String name;
     private final Material item;
     private final Weapon.Type type;
+    private final boolean exclusive;
     private final BulletType bullet;
     private final double damage;
     private final float speed;
@@ -19,8 +20,9 @@ public class WeaponType {
     private final int magazine;
 
     @SneakyThrows
-    public WeaponType(String name, Material item, Class<? extends BulletType> bullet, float speed, int ammo, int magazine) {
+    public WeaponType(String name, Material item, boolean exclusive, Class<? extends BulletType> bullet, float speed, int ammo, int magazine) {
         this.item = item;
+        this.exclusive = exclusive;
         this.type = Weapon.Type.GUN;
         this.name = name;
         this.ammo = ammo;
@@ -30,8 +32,9 @@ public class WeaponType {
         this.speed = speed;
     }
 
-    public WeaponType(String name, Material item, int damage, float speed) {
+    public WeaponType(String name, Material item, boolean exclusive, int damage, float speed) {
         this.item = item;
+        this.exclusive = exclusive;
         this.type = Weapon.Type.MELEE;
         this.name = name;
         this.magazine = 0;

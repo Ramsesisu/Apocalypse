@@ -36,7 +36,7 @@
         }
 
         @NonNull
-        public static <T> T get(Class<T> service) {
+        public static <T> T get(final Class<T> service) {
             if (INSTANCE.services.containsKey(service))
                 return service.cast(INSTANCE.services.get(service));
             else return service.cast(INSTANCE.records.get(service));

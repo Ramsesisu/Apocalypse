@@ -45,7 +45,31 @@ public class Location {
         return LocationUtils.toAverage(loc);
     }
 
+    public void setWorld(World world) {
+        this.location.setWorld(world);
+    }
+
+    public World getWorld() {
+        return this.location.getWorld();
+    }
+
     private int parse(String string) {
         return Integer.parseInt(string);
+    }
+
+    public int getX() {
+        return this.location.getBlockX();
+    }
+
+    public int getY() {
+        return this.location.getBlockY();
+    }
+
+    public int getZ() {
+        return this.location.getBlockZ();
+    }
+
+    public double distance(Location location) {
+        return this.location.distance(location.get());
     }
 }

@@ -61,7 +61,7 @@ public class Survivor {
 
     public void lobby(Lobby lobby) {
         if (this.isOnline()) {
-            this.teleport(lobby.getWorld(), lobby.getMap().getOrigin());
+            this.teleport(lobby.getWorld(), lobby.getMap().getSpawn());
             if (!lobby.getSurvivors().contains(this))
                 lobby.add(this);
         }
@@ -81,6 +81,10 @@ public class Survivor {
 
     public Location getLocation() {
         return this.isOnline() ? new Location(this.online().getLocation()) : null;
+    }
+
+    public World getWorld() {
+        return this.isOnline() ? this.online().getWorld() : null;
     }
 
     public Inventory getInventory() {

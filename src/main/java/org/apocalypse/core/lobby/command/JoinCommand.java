@@ -14,7 +14,7 @@ public class JoinCommand extends CommandExecutor {
 
     @Override
     public void execute(Survivor survivor, String[] args, String name, Command command) {
-        Lobby lobby = Container.get(LobbyService.class).find(survivor, DeadEnd.class);
+        Lobby lobby = Container.get(LobbyService.class).find(DeadEnd.class);
         lobby.add(survivor);
         survivor.lobby(lobby);
     }

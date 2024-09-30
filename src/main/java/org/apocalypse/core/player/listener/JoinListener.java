@@ -2,7 +2,9 @@ package org.apocalypse.core.player.listener;
 
 import net.kyori.adventure.text.Component;
 import org.apocalypse.api.command.Prefix;
+import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.service.container.Container;
+import org.apocalypse.core.lobby.LobbyService;
 import org.apocalypse.core.player.PlayerService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +28,8 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        Survivor survivor = Container.get(PlayerService.class).get(player.getUniqueId());
+        Container.get(LobbyService.class).find(survivor).remove(survivor);
         Container.get(PlayerService.class).remove(player.getUniqueId());
     }
 }
