@@ -2,6 +2,7 @@ package org.apocalypse.core.player.listener;
 
 import net.kyori.adventure.text.Component;
 import org.apocalypse.api.command.Prefix;
+import org.apocalypse.api.lobby.Lobby;
 import org.apocalypse.api.location.Location;
 import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.service.container.Container;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.MainHand;
 
 public class JoinListener implements Listener {
 
@@ -21,6 +23,8 @@ public class JoinListener implements Listener {
         Prefix prefix = new Prefix("Join", Prefix.Color.YELLOW, Prefix.Color.LIME);
 
         Player player = event.getPlayer();
+        if (player.getMainHand() == MainHand.LEFT)
+            player.kick(Component.text("§cYou are not allowed to join having the main hand set to left."));
         event.joinMessage(prefix.getPrefix().append(Component.text( "§e§l" + player.getName() + "§e joined!")));
 
         PlayerService playerService = Container.get(PlayerService.class);
@@ -33,7 +37,7 @@ public class JoinListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         Survivor survivor = Container.get(PlayerService.class).get(player.getUniqueId());
-        Container.get(LobbyService.class).find(survivor).remove(survivor);
-        Container.get(PlayerService.class).remove(player.getUniqueId());
+        Lobby lobby = Container.get(LobbyService.class).find(survivor);
+        if (lobby != null) if (lobby.getRound() == 0) lobby.remove(survivor);
     }
 }

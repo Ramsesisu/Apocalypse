@@ -19,8 +19,12 @@ public abstract class WeaponType {
     private final int ammo;
     private final int magazine;
 
+    public WeaponType(String name, Material item, Class<? extends BulletType> bullet, double damage, float speed, int ammo, int magazine) {
+        this(name, item, false, bullet, damage, speed, ammo, magazine);
+    }
+
     @SneakyThrows
-    public WeaponType(String name, Material item, boolean exclusive, Class<? extends BulletType> bullet, float speed, int ammo, int magazine) {
+    public WeaponType(String name, Material item, boolean exclusive, Class<? extends BulletType> bullet, double damage, float speed, int ammo, int magazine) {
         this.item = item;
         this.exclusive = exclusive;
         this.type = Weapon.Type.GUN;
@@ -28,11 +32,15 @@ public abstract class WeaponType {
         this.ammo = ammo;
         this.magazine = magazine;
         this.bullet = bullet.getConstructor().newInstance();
-        this.damage = this.bullet.getDamage();
+        this.damage = damage;
         this.speed = speed;
     }
 
-    public WeaponType(String name, Material item, boolean exclusive, int damage, float speed) {
+    public WeaponType(String name, Material item, double damage, float speed) {
+        this(name, item, false, damage, speed);
+    }
+
+    public WeaponType(String name, Material item, boolean exclusive, double damage, float speed) {
         this.item = item;
         this.exclusive = exclusive;
         this.type = Weapon.Type.MELEE;

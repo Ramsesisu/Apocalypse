@@ -8,8 +8,12 @@ import org.apocalypse.api.location.Location;
 import org.apocalypse.api.map.area.spawn.Spawn;
 import org.apocalypse.api.monster.type.MonsterType;
 import org.apocalypse.api.player.Survivor;
+import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creature;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
@@ -26,6 +30,14 @@ public class Monster {
         this.type = type;
         this.spawn = spawn;
         this.entity = lobby.getWorld().createEntity(spawn.getLocation().get(), type.getType());
+        this.entity.setAggressive(true);
+        EntityEquipment equipment = this.entity.getEquipment();
+        equipment.setHelmet(ItemStack.of(type.getHelmet()));
+        equipment.setChestplate(ItemStack.of(type.getChestplate()));
+        equipment.setLeggings(ItemStack.of(type.getLeggings()));
+        equipment.setBoots(ItemStack.of(type.getBoots()));
+        if (this.entity instanceof Ageable ageable)
+            if (type.isBaby()) ageable.setBaby();
         Objects.requireNonNull(this.entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(type.getHealth());
     }
 
@@ -34,12 +46,21 @@ public class Monster {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (entity.isDead()) this.cancel();
-                entity.setTarget(getClosest(lobby).online());
-                if (new Location(entity.getLocation()).distance(spawn.getBarrier().getCenter(lobby.getWorld())) < 2.5)
+                if (entity.isDead()) {
+                    this.cancel();
+                    return;
+                }
+                Survivor closest = getClosest(lobby);
+                if (closest == null) {
+                    lobby.lose();
+                    this.cancel();
+                    return;
+                }
+                entity.setTarget(closest.online());
+                if (new Location(entity.getLocation()).distance(spawn.getBarrier().getCenter(lobby.getWorld())) < 2)
                     spawn.getBarrier().destroy(lobby.getWorld());
             }
-        }.runTaskTimer(Apocalypse.getInstance(), 0L, 30L);
+        }.runTaskTimer(Apocalypse.getInstance(), 0L, 40L);
     }
 
     public Survivor getClosest(Lobby lobby) {
@@ -47,6 +68,7 @@ public class Monster {
         double distance = Double.MAX_VALUE;
         for (Survivor player : lobby.getSurvivors()) {
             if (!player.isOnline()) continue;
+            if (player.online().getGameMode() == GameMode.SPECTATOR) continue;
             double d = player.getLocation().get().distance(this.entity.getLocation());
             if (d < distance) {
                 distance = d;
@@ -54,5 +76,9 @@ public class Monster {
             }
         }
         return closest;
+    }
+
+    public boolean isSpawned() {
+        return this.entity.isValid();
     }
 }

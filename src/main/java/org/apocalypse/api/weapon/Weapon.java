@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apocalypse.api.builder.ItemBuilder;
+import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.weapon.type.WeaponType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -27,13 +28,21 @@ public class Weapon {
     private int magazine;
     private boolean enchanted = false;
     private long cooldown = 0;
+    private Survivor player = null;
+
+    public Weapon(Class<? extends WeaponType> type) throws Exception {
+        this(type.getConstructor().newInstance());
+    }
 
     public Weapon(@NotNull WeaponType type) {
         this.key = UUID.randomUUID();
         this.type = type;
         this.ammo = type.getAmmo();
         this.magazine = type.getMagazine();
-        this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).saveData("uuid", key.toString()).build();
+        if (type.getType() == Type.GUN)
+            this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).saveData("uuid", key.toString()).build();
+        else
+            this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).saveData("uuid", key.toString()).build();
     }
 
     public boolean isCooldown() {

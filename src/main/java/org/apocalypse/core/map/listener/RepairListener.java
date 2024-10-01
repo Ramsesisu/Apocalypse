@@ -22,15 +22,20 @@ public class RepairListener implements Listener {
         final Barrier barrier = lobby.getBarrier(survivor.getLocation());
         if (barrier == null) return;
         if (barrier.isRepairing()) return;
+        if (!barrier.isSafe(lobby.getWorld())) return;
         barrier.setRepairing(true);
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (!event.getPlayer().isSneaking()
-                        || survivor.getLocation().distance(barrier.getCenter(survivor.getWorld())) > 5) {
+                        || !barrier.isSafe(lobby.getWorld())
+                        || survivor.getLocation().distance(barrier.getCenter(survivor.getWorld())) > 4) {
                     barrier.setRepairing(false);
                     this.cancel();
-                } else barrier.repair(lobby.getWorld());
+                } else {
+                    barrier.repair(lobby.getWorld());
+                    survivor.addMoney(20);
+                }
             }
         }.runTaskTimer(Apocalypse.getInstance(), 20L, 20L);
     }

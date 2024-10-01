@@ -10,6 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 
 @Getter
 @Setter
@@ -26,7 +28,7 @@ public class Barrier {
             Block block = iterator.next();
             if (!block.getType().isSolid()) {
                 block.setType(Material.OAK_SLAB);
-                block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE, 1.0F, 1.0F);
+                block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE, 0.4F, 1.0F);
                 return;
             }
         }
@@ -38,10 +40,16 @@ public class Barrier {
             Block block = iterator.next();
             if (block.getType().isSolid()) {
                 block.setType(Material.AIR);
-                block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1.0F, 1.0F);
+                block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1F, 1.0F);
                 return;
             }
         }
+    }
+
+    public boolean isSafe(World world) {
+        for (LivingEntity entity : world.getNearbyLivingEntities(this.getCenter(world).get(), 2)) {
+            if (entity instanceof Monster) return false;
+        } return true;
     }
 
     public Location getCenter(World world) {

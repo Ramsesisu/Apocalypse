@@ -8,6 +8,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import org.apocalypse.api.command.Prefix;
 import org.apocalypse.api.lobby.Lobby;
 import org.apocalypse.api.location.Location;
+import org.apocalypse.api.player.corpse.Corpse;
 import org.apocalypse.api.scoreboard.Scoreboard;
 import org.apocalypse.api.scoreboard.main.MainScoreboard;
 import org.apocalypse.api.scoreboard.team.TeamScoreBoard;
@@ -27,8 +28,9 @@ public class Survivor {
     private Scoreboard scoreboard;
     private Lobby lobby = null;
     private int money = 0;
-    private int kills;
-
+    private int kills = 0;
+    private Corpse corpse = null;
+    private boolean reviving;
 
     public Survivor(OfflinePlayer player) {
         this.player = player;
@@ -36,15 +38,24 @@ public class Survivor {
     }
 
     public Player online() {
-        return player.getPlayer();
+        return this.player.getPlayer();
     }
 
     public boolean isOnline() {
-        return player.isOnline();
+        return this.player.isOnline();
+    }
+
+    public boolean isInLobby() {
+        if (!this.isOnline()) return false;
+        return this.lobby != null;
+    }
+
+    public boolean isDead() {
+        return this.corpse != null;
     }
 
     public String getName() {
-        return player.getName();
+        return this.player.getName();
     }
 
     public boolean hasPermission(String permission) {
@@ -90,8 +101,8 @@ public class Survivor {
     public void leaveLobby() {
         if (this.isOnline()) {
             this.teleport(LocationUtils.WORLD, new Location(LocationUtils.WORLD.getSpawnLocation()));
-            if (this.getLobby() != null)
-                this.getLobby().remove(this);
+            if (this.lobby != null && this.lobby.getRound() == 0)
+                this.lobby.remove(this);
             this.setLobby(null);
             this.setScoreboard(new MainScoreboard(this));
         }

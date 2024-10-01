@@ -178,8 +178,10 @@ public class ItemBuilder {
     }
 
     public String loadData(String key) {
-        NamespacedKey name = new NamespacedKey(Apocalypse.getInstance(), key);
+        if (this.item == null) return null;
         ItemMeta meta = this.item.getItemMeta();
+        if (meta == null) return null;
+        NamespacedKey name = new NamespacedKey(Apocalypse.getInstance(), key);
         PersistentDataContainer data = meta.getPersistentDataContainer();
         return data.get(name, PersistentDataType.STRING);
     }

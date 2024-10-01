@@ -25,7 +25,6 @@ public class WeaponRecord extends Record<WeaponType> {
         return get(item) != null;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isGun(ItemStack item) {
         if (!isWeapon(item))
             return false;

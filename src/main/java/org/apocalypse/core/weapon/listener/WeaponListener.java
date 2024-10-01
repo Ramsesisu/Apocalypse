@@ -6,6 +6,7 @@ import org.apocalypse.api.builder.ItemBuilder;
 import org.apocalypse.api.service.container.Container;
 import org.apocalypse.api.weapon.Weapon;
 import org.apocalypse.api.weapon.projectile.Bullet;
+import org.apocalypse.core.player.PlayerService;
 import org.apocalypse.core.weapon.WeaponRecord;
 import org.apocalypse.core.weapon.WeaponService;
 import org.bukkit.Sound;
@@ -37,8 +38,9 @@ public class WeaponListener implements Listener {
         if (!weapon.removeAmmo()) return;
 
         Bullet bullet = new Bullet(weapon.getType().getBullet());
-        bullet.shoot(player);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0F, 1.2F);
+        bullet.shoot(player).forEach(projectile -> projectile.setCustomName(weapon.getKey().toString()));
+        weapon.setPlayer(Container.get(PlayerService.class).get(player));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.2F, 1.2F);
         weapon.setCooldown(System.currentTimeMillis() + Math.round(weapon.getType().getSpeed() * 1000));
         weapon.updateLore();
         player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
@@ -80,5 +82,6 @@ public class WeaponListener implements Listener {
         weapon.setCooldown(System.currentTimeMillis() + Math.round(weapon.getType().getSpeed() * 3000));
         player.sendActionBar(Component.text(ItemBuilder.get(weapon.getItem()).getLore()));
         weapon.updateLore();
+        item.setItemMeta(weapon.getItem().getItemMeta());
     }
 }

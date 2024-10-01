@@ -12,6 +12,12 @@ public class TimeUtils {
         return System.currentTimeMillis();
     }
 
+    public static String getFormattedTimer(long time) {
+        long seconds = time / 1000;
+        long minutes = seconds / 60;
+        return String.format("%02d:%02d", minutes, seconds % 60);
+    }
+
     public static String getFormattedCurrentTime() {
         return formatTime.format(getCurrent());
     }
@@ -78,6 +84,34 @@ public class TimeUtils {
 
     public static int getYearsSince(long time) {
         return getDaysSince(time) / 365;
+    }
+
+    public static int getSecondsUntil(long time) {
+        return (int) ((time - getCurrent()) / 1000);
+    }
+
+    public static int getMinutesUntil(long time) {
+        return getSecondsUntil(time) / 60;
+    }
+
+    public static int getHoursUntil(long time) {
+        return getMinutesUntil(time) / 60;
+    }
+
+    public static int getDaysUntil(long time) {
+        return getHoursUntil(time) / 24;
+    }
+
+    public static int getWeeksUntil(long time) {
+        return getDaysUntil(time) / 7;
+    }
+
+    public static int getMonthsUntil(long time) {
+        return getDaysUntil(time) / 30;
+    }
+
+    public static int getYearsUntil(long time) {
+        return getDaysUntil(time) / 365;
     }
 
     public static boolean isInRange(long date) {

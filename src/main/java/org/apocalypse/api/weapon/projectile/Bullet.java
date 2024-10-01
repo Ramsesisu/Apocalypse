@@ -37,10 +37,10 @@ public class Bullet {
         return this.projectiles.size() > 1;
     }
 
-    public void shoot(Player shooter) {
-        this.projectiles = this.type.shoot(shooter);
+    public List<Projectile> shoot(Player shooter) {
         if (this.type.getRange() > 0)
             Bukkit.getScheduler().runTaskLater(Apocalypse.getInstance(),
                     () -> this.projectiles.forEach(Entity::remove), this.type.getRange());
+        return this.projectiles = this.type.shoot(shooter);
     }
 }
