@@ -20,7 +20,6 @@ public class DeathListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         event.setCancelled(true);
-
         Player player = event.getEntity();
         Survivor survivor = Container.get(PlayerService.class).get(player);
         if (!survivor.isInLobby()) return;
@@ -32,6 +31,7 @@ public class DeathListener implements Listener {
     @EventHandler
     public void onRevive(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
         Survivor survivor = Container.get(PlayerService.class).get(player);
         if (survivor.isReviving()) return;
         if (!survivor.isInLobby()) return;

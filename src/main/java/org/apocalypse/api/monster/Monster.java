@@ -31,13 +31,13 @@ public class Monster {
         this.spawn = spawn;
         this.entity = lobby.getWorld().createEntity(spawn.getLocation().get(), type.getType());
         this.entity.setAggressive(true);
+        if (this.entity instanceof Ageable ageable)
+            if (type.isBaby()) ageable.setBaby();
         EntityEquipment equipment = this.entity.getEquipment();
         equipment.setHelmet(ItemStack.of(type.getHelmet()));
         equipment.setChestplate(ItemStack.of(type.getChestplate()));
         equipment.setLeggings(ItemStack.of(type.getLeggings()));
         equipment.setBoots(ItemStack.of(type.getBoots()));
-        if (this.entity instanceof Ageable ageable)
-            if (type.isBaby()) ageable.setBaby();
         Objects.requireNonNull(this.entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(type.getHealth());
     }
 

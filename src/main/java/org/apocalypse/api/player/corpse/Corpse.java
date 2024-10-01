@@ -21,6 +21,9 @@ public class Corpse extends BukkitRunnable {
     public Corpse(Survivor survivor) {
         ItemStack item = ItemBuilder.create(Material.PLAYER_HEAD).setHead(survivor.getPlayer()).build();
         this.item = survivor.getWorld().dropItem(survivor.getLocation().get(), item);
+        this.item.setCanMobPickup(false);
+        this.item.setCustomName("§7§l✟§f " + survivor.getName());
+        this.item.setCustomNameVisible(false);
         this.location = survivor.getLocation();
         this.time = System.currentTimeMillis() + 30000;
         this.survivor = survivor;

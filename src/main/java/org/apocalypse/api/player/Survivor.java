@@ -150,9 +150,9 @@ public class Survivor {
         }
     }
 
-    public boolean addMoney(int amount) {
+    public void addMoney(int amount) {
         this.money += amount;
-        return true;
+        this.sendMessage("+{0}$", String.valueOf(amount));
     }
 
     public boolean hasMoney(int amount) {

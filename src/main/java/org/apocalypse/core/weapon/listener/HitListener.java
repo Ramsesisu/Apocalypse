@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -66,5 +67,11 @@ public class HitListener implements Listener {
         }
         lobby.getSurvivors().forEach(Survivor::updateScoreboard);
         if (lobby.getMonster().isEmpty()) lobby.nextWave();
+    }
+
+    @EventHandler
+    public void onCombust(EntityCombustEvent event) {
+        if (!(event.getEntity() instanceof Player))
+            event.setCancelled(true);
     }
 }
