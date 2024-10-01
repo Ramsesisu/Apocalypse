@@ -44,7 +44,7 @@ public final class Apocalypse extends JavaPlugin {
         this.registerListener();
         this.registerCommands();
 
-        Container.get(MapRecord.class).unzipWorlds();
+        Container.get(MapRecord.class).loadMaps();
     }
 
     @Override

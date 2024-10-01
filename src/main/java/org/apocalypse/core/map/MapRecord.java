@@ -18,7 +18,7 @@ public class MapRecord extends Record<Map> {
     public final File worldFolder = new File(Bukkit.getWorldContainer(), "worlds");
 
     @SneakyThrows
-    public void unzipWorlds() {
+    public void loadMaps() {
         for (Map map : this.list.values()) {
             File zipFile = new File(Bukkit.getWorldContainer(), "maps/" + map.getClass().getSimpleName().toLowerCase()  + ".zip");
             if (!zipFile.exists()) {

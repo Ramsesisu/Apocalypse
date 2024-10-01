@@ -20,6 +20,8 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,12 +42,13 @@ public class Lobby {
     private int round = 0;
 
     @SneakyThrows
-    public Lobby(Class<? extends Map> map) {
+    public Lobby(Map map) {
         this.survivors = new ArrayList<>();
         this.created = System.currentTimeMillis();
-        this.map = map.getConstructor().newInstance();
-        this.world = Bukkit.getServer().createWorld(new WorldCreator("worlds/" + map.getSimpleName().toLowerCase()));
-        assert this.world != null;
+        this.map = map;
+        this.world = this.createNewLobby();
+        if (this.world == null)
+            throw new IllegalStateException("Failed to create new " + map.getName() + " lobby.");
         this.world.setAutoSave(false);
         this.world.setPVP(false);
         this.world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
@@ -64,6 +67,75 @@ public class Lobby {
                 area.getDoors().forEach(door -> door.getHologram().spawn(this.world)));
         Bukkit.getScheduler().runTaskTimer(Apocalypse.getInstance(),
                 () -> this.survivors.forEach(Survivor::updateScoreboard), 0L, 20L);
+    }
+
+    public World createNewLobby() {
+        String name = this.map.getClass().getSimpleName().toLowerCase();
+        File srcDir = new File("worlds/" + name);
+        String file = "worlds/" + name + this.hashCode();
+        File destDir = new File(file);
+
+        try {
+            copyWorld(srcDir, destDir);
+            File uidFile = new File(destDir, "uid.dat");
+            if (uidFile.exists()) uidFile.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        WorldCreator wc = new WorldCreator(file);
+        wc.environment(World.Environment.NORMAL);
+        wc.type(WorldType.NORMAL);
+        World world = wc.createWorld();
+
+        if (world == null)
+            System.err.println("Failed to create world: " + file);
+
+        return world;
+    }
+
+    public void removeLobby() {
+        String name = this.map.getClass().getSimpleName().toLowerCase();
+        String file = "worlds/" + name + this.hashCode();
+        World world = Bukkit.getWorld(file);
+        if (world != null)
+            Bukkit.unloadWorld(world, false);
+
+        File lobbyFolder = new File(file);
+        deleteWorld(lobbyFolder);
+    }
+
+    private void copyWorld(File source, File target) throws Exception {
+        if (!source.isDirectory()) return;
+
+        if (!target.exists()) {
+            target.mkdirs();
+        }
+
+        for (String file : source.list()) {
+            File srcFile = new File(source, file);
+            File destFile = new File(target, file);
+
+            if (srcFile.isDirectory()) {
+                copyWorld(srcFile, destFile);
+            } else {
+                if (srcFile.exists()) {
+                    Files.copy(srcFile.toPath(), destFile.toPath());
+                } else {
+                    System.err.println("File not found: " + srcFile.getPath());
+                }
+            }
+        }
+    }
+
+    private void deleteWorld(File folder) {
+        if (folder.isDirectory()) {
+            for (File file : folder.listFiles()) {
+                this.deleteWorld(file);
+            }
+        }
+        folder.delete();
     }
 
     public void add(Survivor survivor) {

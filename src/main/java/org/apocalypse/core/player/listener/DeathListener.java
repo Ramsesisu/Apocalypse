@@ -46,9 +46,9 @@ public class DeathListener implements Listener {
                             public void run() {
                                 if (i[0]++ > 12) {
                                     dead.teleport(dead.getCorpse().getLocation());
-                                    dead.setCorpse(null);
                                     dead.getCorpse().cancel();
                                     dead.getCorpse().getItem().remove();
+                                    dead.setCorpse(null);
                                     dead.online().setGameMode(GameMode.SURVIVAL);
                                     survivor.setReviving(false);
                                     this.cancel();

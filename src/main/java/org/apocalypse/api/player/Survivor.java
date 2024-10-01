@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
 import org.apocalypse.api.command.Prefix;
 import org.apocalypse.api.lobby.Lobby;
 import org.apocalypse.api.location.Location;
@@ -65,23 +64,24 @@ public class Survivor {
         return false;
     }
 
-    public void sendMessage(Component text, String... args) {
+    public void sendMessage(Component text) {
         if (!this.isOnline()) return;
-        for (int i = 0; i < args.length; i++)
-            text = text.replaceText(TextReplacementConfig.builder().match("{" + i + "}").replacement(args[i]).build());
         this.online().sendMessage(text);
     }
 
     public void sendMessage(String msg, String... args) {
-        this.sendMessage(Component.text(msg), args);
+        if (!this.isOnline()) return;
+        for (int i = 0; i < args.length; i++)
+            msg = msg.replace("{" + i + "}", args[i]);
+        this.online().sendMessage(msg);
     }
 
-    public void sendMessage(Prefix prefix, Component text, String... args) {
-        this.sendMessage(prefix.getPrefix().append(text), args);
+    public void sendMessage(Prefix prefix, Component text) {
+        this.sendMessage(prefix.getPrefix().append(text));
     }
 
-    public void sendMessage(Prefix prefix, String msg, String... args) {
-        this.sendMessage(prefix.getPrefix().append(Component.text(msg)), args);
+    public void sendMessage(Prefix prefix, String msg) {
+        this.sendMessage(prefix.getPrefix().append(Component.text(msg)));
     }
 
     public void sendRawMessage(Object object) {
@@ -152,7 +152,7 @@ public class Survivor {
 
     public void addMoney(int amount) {
         this.money += amount;
-        this.sendMessage("+{0}$", String.valueOf(amount));
+        this.sendMessage("§6 +{0}$", String.valueOf(amount));
     }
 
     public boolean hasMoney(int amount) {

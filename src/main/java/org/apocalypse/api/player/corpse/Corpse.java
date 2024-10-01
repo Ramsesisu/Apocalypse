@@ -20,13 +20,15 @@ public class Corpse extends BukkitRunnable {
 
     public Corpse(Survivor survivor) {
         ItemStack item = ItemBuilder.create(Material.PLAYER_HEAD).setHead(survivor.getPlayer()).build();
-        this.item = survivor.getWorld().dropItem(survivor.getLocation().get(), item);
+        this.item = survivor.getWorld().createEntity(survivor.getLocation().get(), Item.class);
+        this.item.setItemStack(item);
         this.item.setCanMobPickup(false);
         this.item.setCustomName("§7§l✟§f " + survivor.getName());
-        this.item.setCustomNameVisible(false);
+        this.item.setCustomNameVisible(true);
         this.location = survivor.getLocation();
         this.time = System.currentTimeMillis() + 30000;
         this.survivor = survivor;
+        this.item.spawnAt(this.location.get());
         this.runTaskTimer(Apocalypse.getInstance(), 0L, 20L);
     }
 
