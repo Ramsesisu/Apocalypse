@@ -6,7 +6,6 @@ import org.apocalypse.api.player.corpse.Corpse;
 import org.apocalypse.api.service.container.Container;
 import org.apocalypse.core.player.PlayerService;
 import org.bukkit.GameMode;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +25,7 @@ public class DeathListener implements Listener {
         Corpse corpse = new Corpse(survivor);
         survivor.setCorpse(corpse);
         survivor.online().setGameMode(GameMode.SPECTATOR);
+        survivor.getLobby().getSurvivors().forEach(s -> s.sendTitle("§4" + survivor.getName() + " §7 died in §c" + survivor.getLobby().getArea(survivor.getLocation()).getName() + "§7!"));
     }
 
     @EventHandler
@@ -33,35 +33,43 @@ public class DeathListener implements Listener {
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.SPECTATOR) return;
         Survivor survivor = Container.get(PlayerService.class).get(player);
-        if (survivor.isReviving()) return;
-        if (!survivor.isInLobby()) return;
-        for (Entity entity : player.getWorld().getEntities()) {
-            if (entity instanceof Item item) {
-                for (Survivor dead : survivor.getLobby().getSurvivors()) {
-                    if (dead.isDead() && dead.getCorpse().getItem().equals(item)) {
-                        survivor.setReviving(true);
-                        final int[] i = {0};
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (i[0]++ > 12) {
-                                    dead.teleport(dead.getCorpse().getLocation());
-                                    dead.getCorpse().cancel();
-                                    dead.getCorpse().getItem().remove();
-                                    dead.setCorpse(null);
-                                    dead.online().setGameMode(GameMode.SURVIVAL);
-                                    survivor.setReviving(false);
-                                    this.cancel();
-                                }
-                                if (!player.isSneaking()) {
-                                    survivor.setReviving(false);
-                                    this.cancel();
-                                }
-                            }
-                        }.runTaskTimer(Apocalypse.getInstance(), 0L, 5L);
-                    }
+        if (survivor.isReviving() || !survivor.isInLobby()) return;
+
+        player.getWorld().getEntities().stream()
+                .filter(entity -> entity instanceof Item)
+                .map(entity -> (Item) entity)
+                .forEach(item -> survivor.getLobby().getSurvivors().stream()
+                        .filter(Survivor::isDead)
+                        .filter(dead -> dead.getCorpse().getItem().equals(item))
+                        .findFirst()
+                        .ifPresent(dead -> startReviveProcess(player, survivor, dead)));
+    }
+
+    private void startReviveProcess(Player player, Survivor survivor, Survivor dead) {
+        survivor.setReviving(true);
+        new BukkitRunnable() {
+            private int i = 0;
+
+            @Override
+            public void run() {
+                if (i++ > 12) {
+                    completeRevival(dead);
+                    survivor.setReviving(false);
+                    this.cancel();
+                }
+                if (!player.isSneaking()) {
+                    survivor.setReviving(false);
+                    this.cancel();
                 }
             }
-        }
+        }.runTaskTimer(Apocalypse.getInstance(), 0L, 5L);
+    }
+
+    private void completeRevival(Survivor dead) {
+        dead.teleport(dead.getCorpse().getLocation());
+        dead.getCorpse().cancel();
+        dead.getCorpse().getItem().remove();
+        dead.setCorpse(null);
+        dead.online().setGameMode(GameMode.SURVIVAL);
     }
 }

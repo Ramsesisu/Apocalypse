@@ -11,19 +11,36 @@ public class Location {
         this.location = location;
     }
 
+    public Location(World world, org.bukkit.Location location) {
+        this.location = location;
+        this.location.setWorld(world);
+    }
+
     public Location(int x, int z) {
-        this.location = new org.bukkit.Location(LocationUtils.WORLD, x, 0, z);
+        this(x, 0, z, 0, 0);
     }
 
     public Location(int x, int y, int z) {
-        this.location = new org.bukkit.Location(LocationUtils.WORLD, x, y, z);
+        this(x, y, z, 0, 0);
+    }
+
+    public Location(int x, float y, int z) {
+        this(x, y, z, 0, 0);
     }
 
     public Location(int x, int y, int z, int yaw) {
-        this.location = new org.bukkit.Location(LocationUtils.WORLD, x, y, z, yaw, 0);
+        this(x, y, z, yaw, 0);
+    }
+
+    public Location(int x, float y, int z, int yaw) {
+        this(x, y, z, yaw, 0);
     }
 
     public Location(int x, int y, int z, int yaw, int pitch) {
+        this.location = new org.bukkit.Location(LocationUtils.WORLD, x, y, z, yaw, pitch);
+    }
+
+    public Location(int x, float y, int z, int yaw, int pitch) {
         this.location = new org.bukkit.Location(LocationUtils.WORLD, x, y, z, yaw, pitch);
     }
 
@@ -33,6 +50,12 @@ public class Location {
 
     public Location(String x, String y, String z, String yaw) {
         this.location = new org.bukkit.Location(LocationUtils.WORLD, parse(x), parse(y), parse(z), parse(yaw), 0);
+    }
+
+    public void add(float x, float y, float z) {
+        this.location.setX(this.location.getX() + x);
+        this.location.setY(this.location.getY() + y);
+        this.location.setZ(this.location.getZ() + z);
     }
 
     public org.bukkit.Location get() {
@@ -67,6 +90,10 @@ public class Location {
 
     public int getZ() {
         return this.location.getBlockZ();
+    }
+
+    public int getYaw() {
+        return (int) this.location.getYaw();
     }
 
     public double distance(Location location) {

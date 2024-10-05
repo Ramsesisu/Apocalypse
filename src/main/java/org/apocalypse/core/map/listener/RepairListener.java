@@ -33,8 +33,10 @@ public class RepairListener implements Listener {
                     barrier.setRepairing(false);
                     this.cancel();
                 } else {
-                    barrier.repair(lobby.getWorld());
-                    survivor.addMoney(20);
+                    if (barrier.repair(lobby.getWorld())) {
+                        survivor.addMoney(20);
+                        survivor.sendMessage("§6 +20$ (Repair)");
+                    }
                 }
             }
         }.runTaskTimer(Apocalypse.getInstance(), 20L, 20L);

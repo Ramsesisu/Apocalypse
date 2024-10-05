@@ -57,7 +57,7 @@ public class Monster {
                     return;
                 }
                 entity.setTarget(closest.online());
-                if (new Location(entity.getLocation()).distance(spawn.getBarrier().getCenter(lobby.getWorld())) < 2)
+                if (new Location(entity.getLocation()).distance(spawn.getBarrier().getCenter(lobby.getWorld())) < 2.5)
                     spawn.getBarrier().destroy(lobby.getWorld());
             }
         }.runTaskTimer(Apocalypse.getInstance(), 0L, 40L);

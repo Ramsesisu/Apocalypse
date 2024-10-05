@@ -15,7 +15,7 @@ public class Door {
     private final Location second;
     private final Hologram hologram;
     private final int cost;
-    private boolean open;
+    private boolean open = false;
 
     public Door(String name, Location first, Location second, Location hologram, int cost) {
         this.name = name;
@@ -26,8 +26,12 @@ public class Door {
     }
 
     public void open(World world) {
-        new BlockIterator(world, first, second).forEachRemaining(block -> block.setType(Material.AIR));
+        openDoorBlocks(world);
         this.open = true;
         this.hologram.remove();
+    }
+
+    private void openDoorBlocks(World world) {
+        new BlockIterator(world, first, second).forEachRemaining(block -> block.setType(Material.AIR));
     }
 }

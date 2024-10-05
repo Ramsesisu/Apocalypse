@@ -8,6 +8,7 @@ import org.apocalypse.api.weapon.Weapon;
 import org.apocalypse.core.player.PlayerService;
 import org.apocalypse.core.weapon.WeaponService;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -28,11 +29,17 @@ public class HitListener implements Listener {
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Projectile projectile) {
+            if (!(event.getEntity() instanceof LivingEntity entity)) return;
             Weapon weapon = Container.get(WeaponService.class).get(projectile);
-            event.setDamage(weapon.getType().getDamage());
+            boolean isHeadshot = (entity.getEyeHeight() + entity.getLocation().getY()) < (projectile.getLocation().getY());
+            double damage = weapon.getType().getDamage();
+            if (isHeadshot) damage *= 1.5;
+            event.setDamage(damage);
             Survivor survivor = weapon.getPlayer();
             if (survivor == null) return;
-            survivor.addMoney((int) Math.round(weapon.getType().getDamage() * 2));
+            int money = (int) Math.round(damage * 2);
+            survivor.addMoney(money);
+            survivor.sendMessage("§6 +{0}$ (" + (isHeadshot ? "Critical " : "") + "Hit)", String.valueOf(money));
         } else if (event.getDamager() instanceof Player player) {
             ItemStack item = player.getInventory().getItemInMainHand();
             Weapon weapon = Container.get(WeaponService.class).get(item);
@@ -44,7 +51,9 @@ public class HitListener implements Listener {
                     event.setDamage(weapon.getType().getDamage());
                     weapon.setCooldown(System.currentTimeMillis() + Math.round(weapon.getType().getSpeed() * 1000));
                     Survivor survivor = Container.get(PlayerService.class).get(player);
-                    survivor.addMoney((int) Math.round(weapon.getType().getDamage() * 2));
+                    int money = (int) Math.round(weapon.getType().getDamage() * 2);
+                    survivor.addMoney(money);
+                    survivor.sendMessage("§6 +{0}$ (Hit)", String.valueOf(money));
                 }
             } else event.setDamage(1);
         }

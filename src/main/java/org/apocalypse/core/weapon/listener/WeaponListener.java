@@ -3,12 +3,14 @@ package org.apocalypse.core.weapon.listener;
 import net.kyori.adventure.text.Component;
 import org.apocalypse.Apocalypse;
 import org.apocalypse.api.builder.ItemBuilder;
+import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.service.container.Container;
 import org.apocalypse.api.weapon.Weapon;
 import org.apocalypse.api.weapon.projectile.Bullet;
 import org.apocalypse.core.player.PlayerService;
 import org.apocalypse.core.weapon.WeaponRecord;
 import org.apocalypse.core.weapon.WeaponService;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,6 +33,8 @@ public class WeaponListener implements Listener {
         if (!Container.get(WeaponRecord.class).isGun(item)) return;
 
         Player player = event.getPlayer();
+        Survivor survivor = Container.get(PlayerService.class).get(player);
+        if (survivor.isDead()) return;
         Weapon weapon = Container.get(WeaponService.class).get(item);
         if (weapon == null) return;
         event.setCancelled(true);
@@ -57,6 +61,8 @@ public class WeaponListener implements Listener {
         if (weapon.isFull()) return;
 
         Player player = event.getPlayer();
+        Survivor survivor = Container.get(PlayerService.class).get(player);
+        if (survivor.isDead()) return;
         int slot = player.getInventory().getHeldItemSlot();
         if (item.getItemMeta() instanceof Damageable damageable) {
             int step = item.getType().getMaxDurability() / 10;
@@ -66,13 +72,18 @@ public class WeaponListener implements Listener {
                 public void run() {
                     if (damageable.getDamage() <= 0) {
                         item.setItemMeta(weapon.getItem().getItemMeta());
+                        weapon.setReloading(false);
                         this.cancel();
+                        return;
                     }
+                    weapon.setReloading(true);
                     int damage = damageable.getDamage() - step;
                     if (damage < 0) damage = 0;
                     damageable.setDamage(damage);
                     item.setItemMeta(damageable);
-                    player.getInventory().setItem(slot, item);
+                    if (player.getInventory().getItem(slot) != null)
+                        if (player.getInventory().getItem(slot).getType() != Material.AIR)
+                            player.getInventory().setItem(slot, item);
                 }
             }.runTaskTimer(Apocalypse.getInstance(), 0L, Math.round(weapon.getType().getSpeed()) * 6L);
         }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apocalypse.Apocalypse;
+import org.apocalypse.api.config.MapConfig;
 import org.apocalypse.api.lobby.wave.Wave;
 import org.apocalypse.api.location.Location;
 import org.apocalypse.api.map.Map;
@@ -12,10 +13,11 @@ import org.apocalypse.api.map.area.door.Door;
 import org.apocalypse.api.map.area.loot.Loot;
 import org.apocalypse.api.map.area.spawn.Spawn;
 import org.apocalypse.api.map.area.spawn.barrier.Barrier;
+import org.apocalypse.api.map.area.storage.Storage;
+import org.apocalypse.api.map.factory.MapFactory;
 import org.apocalypse.api.monster.Monster;
 import org.apocalypse.api.monster.type.MonsterType;
 import org.apocalypse.api.player.Survivor;
-import org.apocalypse.api.utils.LocationUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -25,6 +27,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Getter
@@ -37,18 +40,19 @@ public class Lobby {
     private final Map map;
     private final World world;
     private final long created;
-    private Loot loot;
+    private long started = 0;
+    private Loot loot = null;
     private Wave wave = null;
     private int round = 0;
 
     @SneakyThrows
-    public Lobby(Map map) {
+    public Lobby(MapConfig map) {
         this.survivors = new ArrayList<>();
         this.created = System.currentTimeMillis();
-        this.map = map;
-        this.world = this.createNewLobby();
+        this.world = this.createNewLobby(map);
         if (this.world == null)
             throw new IllegalStateException("Failed to create new " + map.getName() + " lobby.");
+        this.map = MapFactory.createMap(map);
         this.world.setAutoSave(false);
         this.world.setPVP(false);
         this.world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
@@ -63,14 +67,16 @@ public class Lobby {
                 return null;
             }
         }).toList();
-        this.map.getAreas().forEach(area ->
-                area.getDoors().forEach(door -> door.getHologram().spawn(this.world)));
+        this.resetLoot();
+        this.map.getLootChests().forEach(loot -> loot.getHologram().spawn(this.world));
+        this.map.getAreas().forEach(area -> area.getDoors().forEach(door -> door.getHologram().spawn(this.world)));
+        this.map.getAreas().forEach(area -> area.getStorages().forEach(storage -> storage.spawn(this.world)));
         Bukkit.getScheduler().runTaskTimer(Apocalypse.getInstance(),
                 () -> this.survivors.forEach(Survivor::updateScoreboard), 0L, 20L);
     }
 
-    public World createNewLobby() {
-        String name = this.map.getClass().getSimpleName().toLowerCase();
+    public World createNewLobby(MapConfig map) {
+        String name = map.getName().replace(" ", "").toLowerCase();
         File srcDir = new File("worlds/" + name);
         String file = "worlds/" + name + this.hashCode();
         File destDir = new File(file);
@@ -96,7 +102,7 @@ public class Lobby {
     }
 
     public void removeLobby() {
-        String name = this.map.getClass().getSimpleName().toLowerCase();
+        String name = this.map.getName().replace(" ", "").toLowerCase();
         String file = "worlds/" + name + this.hashCode();
         World world = Bukkit.getWorld(file);
         if (world != null)
@@ -152,6 +158,10 @@ public class Lobby {
         return this.survivors.size();
     }
 
+    public List<Survivor> getSurvivors() {
+        return this.survivors.stream().filter(survivor -> survivor.getLobby() == this).collect(Collectors.toList());
+    }
+
     public boolean isStarted() {
         return this.wave != null;
     }
@@ -162,7 +172,7 @@ public class Lobby {
                 .filter(type -> type.getFirst() <= this.round && type.getLast() >= this.round)
                 .collect(Collectors.toList());
 
-        this.wave = new Wave(this, monster, round * 5);
+        this.wave = new Wave(this, monster, round * (survivors.size() > 1 ? survivors.size() > 2 ? 5 : 4 : 3));
         this.wave.start();
 
         this.survivors.forEach(survivor -> {
@@ -205,9 +215,19 @@ public class Lobby {
     public Door getDoor(Location location) {
         for (Area area : this.map.getAreas()) {
             for (Door door : area.getDoors()) {
-                if (LocationUtils.getMiddle(door.getFirst().get(location.getWorld()), door.getSecond().get(location.getWorld()))
-                        .distance(location.get()) < 2)
+                if (door == null) continue;
+                if (door.getHologram().getLocation().distance(location) < 4)
                     return door;
+            }
+        } return null;
+    }
+
+    public Storage getStorage(Location location) {
+        for (Area area : this.map.getAreas()) {
+            for (Storage storage : area.getStorages()) {
+                if (storage == null) continue;
+                if (storage.getLocation().get(location.getWorld()).distance(location.get()) < 3)
+                    return storage;
             }
         } return null;
     }
@@ -215,6 +235,7 @@ public class Lobby {
     public Barrier getBarrier(Location location) {
         for (Area area : this.map.getAreas()) {
             for (Spawn spawn : area.getSpawns()) {
+                if (spawn.getBarrier() == null) continue;
                 if (spawn.getBarrier().getCenter(location.getWorld()).distance(location) < 4)
                     return spawn.getBarrier();
             }
@@ -222,10 +243,22 @@ public class Lobby {
     }
 
     public Loot getLoot(Location location) {
-        for (Area area : this.map.getAreas()) {
-            if (area.getLoot() == null) continue;
-            if (area.getLoot().getLocation().get(location.getWorld()).distance(location.get()) < 2)
-                return area.getLoot();
+        for (Loot loot : this.map.getLootChests()) {
+            if (loot.getLocation().get(location.getWorld()).distance(location.get()) < 3)
+                return loot;
         } return null;
+    }
+
+    public void resetLoot() {
+        Loot loot = this.map.getLootChests().get(new Random().nextInt(this.map.getLootChests().size()));
+        if (this.loot != null) {
+            if (this.loot == loot) {
+                this.resetLoot();
+                return;
+            }
+        }
+        loot.setTries(0);
+        loot.setActive(true);
+        this.loot = loot;
     }
 }

@@ -22,16 +22,17 @@ public class Barrier {
     private final Location second;
     private boolean repairing = false;
 
-    public void repair(World world) {
+    public boolean repair(World world) {
         BlockIterator iterator = new BlockIterator(world, first, second);
         while (iterator.hasNext()) {
             Block block = iterator.next();
             if (!block.getType().isSolid()) {
                 block.setType(Material.OAK_SLAB);
                 block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE, 0.4F, 1.0F);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     public void destroy(World world) {

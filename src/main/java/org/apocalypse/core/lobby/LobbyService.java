@@ -1,11 +1,10 @@
 package org.apocalypse.core.lobby;
 
+import org.apocalypse.api.config.MapConfig;
 import org.apocalypse.api.lobby.Lobby;
-import org.apocalypse.api.map.Map;
+import org.apocalypse.api.map.factory.MapFactory;
 import org.apocalypse.api.player.Survivor;
 import org.apocalypse.api.service.Service;
-import org.apocalypse.api.service.container.Container;
-import org.apocalypse.core.map.MapRecord;
 
 import java.util.Collection;
 
@@ -15,20 +14,13 @@ public class LobbyService extends Service<Integer, Lobby> {
         return this.list.values();
     }
 
-    public Lobby find(Class<? extends Map> map) {
-        return this.find(Container.get(MapRecord.class).get(map));
+    public Lobby find(String map) {
+        return this.find(MapFactory.mapsWrapper.getMap(map));
     }
 
-    public Lobby find(Map map) {
-        for (int i : this.list.keySet()) {
-            Lobby lobby = this.get(i);
-            if (lobby.size() == 0 && lobby.isStarted()) {
-                lobby.removeLobby();
-                this.remove(i);
-            }
-        }
+    public Lobby find(MapConfig map) {
         for (Lobby lobby : this.getLobbies()) {
-            if (lobby.getMap().equals(map))
+            if (lobby.getMap().getName().equalsIgnoreCase(map.getName()))
                 if (lobby.size() < 4 && !lobby.isStarted())
                     return lobby;
         }

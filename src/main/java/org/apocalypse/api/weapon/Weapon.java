@@ -29,6 +29,7 @@ public class Weapon {
     private boolean enchanted = false;
     private long cooldown = 0;
     private Survivor player = null;
+    private boolean reloading = false;
 
     public Weapon(Class<? extends WeaponType> type) throws Exception {
         this(type.getConstructor().newInstance());
@@ -40,9 +41,9 @@ public class Weapon {
         this.ammo = type.getAmmo();
         this.magazine = type.getMagazine();
         if (type.getType() == Type.GUN)
-            this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).saveData("uuid", key.toString()).build();
+            this.item = ItemBuilder.create(type.getItem()).setName("§6" + type.getName()).setLore("§6" + ammo + "§8/§6" + magazine).saveData("uuid", key.toString()).build();
         else
-            this.item = ItemBuilder.create(type.getItem()).setName("§7" + type.getName()).saveData("uuid", key.toString()).build();
+            this.item = ItemBuilder.create(type.getItem()).setName("§6" + type.getName()).saveData("uuid", key.toString()).build();
     }
 
     public boolean isCooldown() {

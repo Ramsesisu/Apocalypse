@@ -2,8 +2,8 @@ package org.apocalypse.core.map;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apocalypse.api.map.Map;
-import org.apocalypse.api.service.Record;
+import org.apocalypse.api.config.MapConfig;
+import org.apocalypse.api.config.loader.ConfigLoader;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -12,23 +12,26 @@ import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-@Getter
-public class MapRecord extends Record<Map> {
+import static org.apocalypse.api.map.factory.MapFactory.mapsWrapper;
 
-    public final File worldFolder = new File(Bukkit.getWorldContainer(), "worlds");
+@Getter
+public class MapLoader {
 
     @SneakyThrows
-    public void loadMaps() {
-        for (Map map : this.list.values()) {
-            File zipFile = new File(Bukkit.getWorldContainer(), "maps/" + map.getClass().getSimpleName().toLowerCase()  + ".zip");
+    public static void loadMaps() {
+        mapsWrapper = ConfigLoader.loadMapsConfig("maps.yml");
+        for (MapConfig config : mapsWrapper.getMaps()) {
+
+            File zipFile = new File(Bukkit.getWorldContainer(), "maps/" + config.getName().replace(" ", "").toLowerCase() + ".zip");
             if (!zipFile.exists()) {
-                Bukkit.getServer().getLogger().info("The zip file for map " + map.getName() + " does not exist.");
+                Bukkit.getServer().getLogger().info("The zip file for map " + config.getName() + " does not exist.");
+                continue;
             }
 
             try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile.toPath()))) {
                 ZipEntry entry;
                 while ((entry = zipInputStream.getNextEntry()) != null) {
-                    File entryDestination = new File(worldFolder, entry.getName());
+                    File entryDestination = new File(new File(Bukkit.getWorldContainer(), "worlds"), entry.getName());
                     if (entry.isDirectory()) {
                         entryDestination.mkdirs();
                     } else {
@@ -43,7 +46,7 @@ public class MapRecord extends Record<Map> {
                     }
                 }
             }
-            Bukkit.getServer().getLogger().info("Unzipped " + map.getName() + " successfully.");
+            Bukkit.getServer().getLogger().info("Unzipped " + config.getName() + " successfully.");
         }
     }
 }

@@ -12,6 +12,9 @@ import org.apocalypse.api.scoreboard.Scoreboard;
 import org.apocalypse.api.scoreboard.main.MainScoreboard;
 import org.apocalypse.api.scoreboard.team.TeamScoreBoard;
 import org.apocalypse.api.utils.LocationUtils;
+import org.apocalypse.api.weapon.Weapon;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -50,6 +53,8 @@ public class Survivor {
     }
 
     public boolean isDead() {
+        if (this.online().getGameMode() == GameMode.SPECTATOR)
+            return true;
         return this.corpse != null;
     }
 
@@ -90,6 +95,7 @@ public class Survivor {
 
     public void joinLobby(Lobby lobby) {
         if (this.isOnline()) {
+            Bukkit.getLogger().info("Joining lobby " + lobby.getWorld().getName());
             this.teleport(lobby.getWorld(), lobby.getMap().getSpawn());
             if (!lobby.getSurvivors().contains(this))
                 lobby.add(this);
@@ -133,8 +139,19 @@ public class Survivor {
     }
 
     public void give(ItemStack item) {
-        if (this.isOnline())
+        if (this.isOnline()) {
             this.online().getInventory().addItem(item);
+        }
+    }
+
+    public void give(int slot, ItemStack item) {
+        if (this.isOnline()) {
+            this.online().getInventory().setItem(slot, item);
+        }
+    }
+
+    public void give(int slot, Weapon weapon) {
+        this.give(slot, weapon.getItem());
     }
 
     public void setScoreboard(Scoreboard scoreboard) {
@@ -152,7 +169,6 @@ public class Survivor {
 
     public void addMoney(int amount) {
         this.money += amount;
-        this.sendMessage("§6 +{0}$", String.valueOf(amount));
     }
 
     public boolean hasMoney(int amount) {

@@ -9,8 +9,9 @@ import org.apocalypse.api.command.CommandImplementation;
 import org.apocalypse.api.lobby.Lobby;
 import org.apocalypse.api.service.container.Container;
 import org.apocalypse.core.lobby.LobbyService;
-import org.apocalypse.core.map.MapRecord;
+import org.apocalypse.core.map.MapLoader;
 import org.bukkit.Bukkit;
+import org.bukkit.WorldCreator;
 import org.bukkit.command.CommandMap;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,7 +45,8 @@ public final class Apocalypse extends JavaPlugin {
         this.registerListener();
         this.registerCommands();
 
-        Container.get(MapRecord.class).loadMaps();
+        MapLoader.loadMaps();
+        Bukkit.getServer().createWorld(new WorldCreator("lobby"));
     }
 
     @Override
@@ -52,7 +54,7 @@ public final class Apocalypse extends JavaPlugin {
         for (Lobby lobby : Container.get(LobbyService.class).getLobbies())
             Bukkit.getServer().unloadWorld(lobby.getWorld(), false);
 
-        File worldFolder = Container.get(MapRecord.class).getWorldFolder();
+        File worldFolder = new File(Bukkit.getWorldContainer(), "worlds");
         if (worldFolder.exists()) {
             try {
                 Files.walk(worldFolder.toPath())

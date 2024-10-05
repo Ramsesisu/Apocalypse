@@ -28,8 +28,9 @@ public class TeamScoreBoard extends Scoreboard {
             board.add("§7Monster§8: §a" + lobby.getMonster().size());
         else {
             long elapsedTime = (System.currentTimeMillis() - lobby.getCreated()) / 1000;
-            long remainingTime = (lobby.size() < 4 ? lobby.size() < 3 ? 60 : 30 : 10) - elapsedTime;
+            long remainingTime = (lobby.size() == 1 ? 60 : lobby.size() == 2 ? 30 : 15) - elapsedTime;
             if (remainingTime <= 0) {
+                lobby.setStarted(System.currentTimeMillis());
                 lobby.nextWave();
                 return;
             }
@@ -39,10 +40,12 @@ public class TeamScoreBoard extends Scoreboard {
         for (Survivor player : lobby.getSurvivors())
             board.add((player.getName().equals(survivor.getName()) ? "§a" : "§7") + player.getName() + "§8: " +
                     (player.isInLobby() ? !player.isDead() ? !player.online().getGameMode().equals(GameMode.SPECTATOR) ? "§6" + player.getMoney() + "$" :
-                            "§cDEAD" : "§eREVIVE §8(§e" + (TimeUtils.getSecondsUntil(player.getCorpse().getTime())) + "§8)" :  "§cQUIT"));
+                            "§cDEAD" : "§eREVIVE §8(§e" + (player.getCorpse() != null ? TimeUtils.getSecondsUntil(player.getCorpse().getTime()) : "0") + "§8)" :  "§cQUIT"));
         board.add("");
-        if (lobby.getRound() > 0)
+        if (lobby.getRound() > 0) {
             board.add("§7Kills§8: §a" + survivor.getKills());
+            board.add("§7Time§8: §a" + TimeUtils.getFormattedTimer(System.currentTimeMillis() - lobby.getStarted()));
+        }
         Area area = lobby.getArea(survivor.getLocation());
         board.add("§7Area§8: §a" + (area == null ? "None" : area.getName()));
         board.add("");

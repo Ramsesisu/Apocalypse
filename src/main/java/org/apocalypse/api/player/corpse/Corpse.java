@@ -23,7 +23,7 @@ public class Corpse extends BukkitRunnable {
         this.item = survivor.getWorld().createEntity(survivor.getLocation().get(), Item.class);
         this.item.setItemStack(item);
         this.item.setCanMobPickup(false);
-        this.item.setCustomName("§7§l✟§f " + survivor.getName());
+        this.item.setCustomName("§7§l✟§e " + survivor.getName());
         this.item.setCustomNameVisible(true);
         this.location = survivor.getLocation();
         this.time = System.currentTimeMillis() + 30000;

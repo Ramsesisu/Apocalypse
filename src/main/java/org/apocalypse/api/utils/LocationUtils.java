@@ -13,6 +13,10 @@ public class LocationUtils {
 
     public static final World WORLD = Bukkit.getWorlds().getFirst();
 
+    public static World getWorld(String name) {
+        return Bukkit.getWorld(name);
+    }
+
     public static String getShort(Location loc) {
         DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.ENGLISH));
         return df.format(loc.getX()) + "/" + df.format(loc.getY()) + "/" + df.format(loc.getZ());
@@ -26,7 +30,7 @@ public class LocationUtils {
     public static Location toAverage(Location loc) {
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
-        return new Location(loc.getWorld(), x + 0.5, loc.getBlockY(), z + 0.5);
+        return new Location(loc.getWorld(), x + 0.5, loc.getY(), z + 0.5, loc.getYaw(), loc.getPitch());
     }
 
     public static boolean isInArea(Location loc, Location loc1, Location loc2) {
